@@ -1,0 +1,17 @@
+commit d14754abe352ff6e428e0b011cd84e91532b92c0 (HEAD -> task1)
+Author: nmalevich <nikita.malewich@gmail.com>
+Date:   Thu Feb 13 18:28:35 2020 +0300
+
+    add status.txt
+
+commit d94e9896c15072ea2d323044f26473463473cc40
+Author: nmalevich <nikita.malewich@gmail.com>
+Date:   Thu Feb 13 18:26:15 2020 +0300
+
+    add .gitignore
+
+commit 4e5f2cdc0e346f2e755093496879502f0ed57ef4 (origin/master, origin/HEAD, master)
+Author: nikmalevich <47688078+nikmalevich@users.noreply.github.com>
+Date:   Thu Feb 13 17:58:20 2020 +0300
+
+    Initial commit
