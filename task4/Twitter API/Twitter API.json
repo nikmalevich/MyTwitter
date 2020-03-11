@@ -1,0 +1,156 @@
+{
+	"info": {
+		"_postman_id": "90a6dd39-20ec-4cb0-b596-34a980d7429b",
+		"name": "Twitter API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "screenName",
+			"request": {
+				"auth": {
+					"type": "oauth1",
+					"oauth1": [
+						{
+							"key": "addParamsToHeader",
+							"value": true,
+							"type": "boolean"
+						},
+						{
+							"key": "addEmptyParamsToSign",
+							"value": false,
+							"type": "boolean"
+						},
+						{
+							"key": "tokenSecret",
+							"value": "o1hnId9VPtHepvJ0uhoOG9VM26PXzpYpOfrIpvCp8KJtE",
+							"type": "string"
+						},
+						{
+							"key": "token",
+							"value": "1056961463707934721-EcV2xica1GBlZJ9P9PM7wOMo1vplMZ",
+							"type": "string"
+						},
+						{
+							"key": "consumerSecret",
+							"value": "1DkX8Zi00gv84YfBDPn78SJ61QV0LD086gVXHl90g22bg8alsy",
+							"type": "string"
+						},
+						{
+							"key": "consumerKey",
+							"value": "m39ccr3pdii6wLxqfsr8gcFR5",
+							"type": "string"
+						},
+						{
+							"key": "version",
+							"value": "1.0",
+							"type": "string"
+						},
+						{
+							"key": "signatureMethod",
+							"value": "HMAC-SHA1",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=snap",
+					"protocol": "https",
+					"host": [
+						"api",
+						"twitter",
+						"com"
+					],
+					"path": [
+						"1.1",
+						"statuses",
+						"user_timeline.json"
+					],
+					"query": [
+						{
+							"key": "screen_name",
+							"value": "snap"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "userName",
+			"request": {
+				"auth": {
+					"type": "oauth1",
+					"oauth1": [
+						{
+							"key": "addParamsToHeader",
+							"value": true,
+							"type": "boolean"
+						},
+						{
+							"key": "addEmptyParamsToSign",
+							"value": false,
+							"type": "boolean"
+						},
+						{
+							"key": "tokenSecret",
+							"value": "o1hnId9VPtHepvJ0uhoOG9VM26PXzpYpOfrIpvCp8KJtE",
+							"type": "string"
+						},
+						{
+							"key": "token",
+							"value": "1056961463707934721-EcV2xica1GBlZJ9P9PM7wOMo1vplMZ",
+							"type": "string"
+						},
+						{
+							"key": "consumerSecret",
+							"value": "1DkX8Zi00gv84YfBDPn78SJ61QV0LD086gVXHl90g22bg8alsy",
+							"type": "string"
+						},
+						{
+							"key": "consumerKey",
+							"value": "m39ccr3pdii6wLxqfsr8gcFR5",
+							"type": "string"
+						},
+						{
+							"key": "version",
+							"value": "1.0",
+							"type": "string"
+						},
+						{
+							"key": "signatureMethod",
+							"value": "HMAC-SHA1",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api.twitter.com/1.1/users/search.json?q=nikita",
+					"protocol": "https",
+					"host": [
+						"api",
+						"twitter",
+						"com"
+					],
+					"path": [
+						"1.1",
+						"users",
+						"search.json"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "nikita"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
