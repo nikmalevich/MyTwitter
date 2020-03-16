@@ -11,6 +11,6 @@ import java.io.IOException;
 public class Test1Servlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        getServletContext().getRequestDispatcher("/status").include(req, resp);
+        getServletContext().getRequestDispatcher("/status").forward(req, resp);
     }
 }

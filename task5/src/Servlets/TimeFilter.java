@@ -26,7 +26,7 @@ public class TimeFilter implements Filter {
         String url = String.valueOf(request.getRequestURL());
         String method = request.getMethod();
 
-        response.getWriter().write("\nTime: " + time + "ms; URL: " + url + "; Method: " + method);
+        System.out.println("Time: " + time + "ms; URL: " + url + "; Method: " + method);
     }
 
     @Override
