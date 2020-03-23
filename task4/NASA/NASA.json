@@ -1,0 +1,112 @@
+{
+	"info": {
+		"_postman_id": "520b59a5-e6d2-4372-bce0-d9b39e9dd526",
+		"name": "NASA",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "astronomyPictureOfTheDate",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api.nasa.gov/planetary/apod?api_key=KTn8EftUMjDZLa7NmZC4RxzdSphV9ypdqFpsss1e",
+					"protocol": "https",
+					"host": [
+						"api",
+						"nasa",
+						"gov"
+					],
+					"path": [
+						"planetary",
+						"apod"
+					],
+					"query": [
+						{
+							"key": "api_key",
+							"value": "KTn8EftUMjDZLa7NmZC4RxzdSphV9ypdqFpsss1e"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "marsWeather",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api.nasa.gov/insight_weather/?api_key=KTn8EftUMjDZLa7NmZC4RxzdSphV9ypdqFpsss1e&feedtype=json&ver=1.0",
+					"protocol": "https",
+					"host": [
+						"api",
+						"nasa",
+						"gov"
+					],
+					"path": [
+						"insight_weather",
+						""
+					],
+					"query": [
+						{
+							"key": "api_key",
+							"value": "KTn8EftUMjDZLa7NmZC4RxzdSphV9ypdqFpsss1e"
+						},
+						{
+							"key": "feedtype",
+							"value": "json"
+						},
+						{
+							"key": "ver",
+							"value": "1.0"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "imageEarth",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api.nasa.gov/planetary/earth/assets?lon=27.61395603&lat=53.85574139&begin=2014-02-01&api_key=KTn8EftUMjDZLa7NmZC4RxzdSphV9ypdqFpsss1e",
+					"protocol": "https",
+					"host": [
+						"api",
+						"nasa",
+						"gov"
+					],
+					"path": [
+						"planetary",
+						"earth",
+						"assets"
+					],
+					"query": [
+						{
+							"key": "lon",
+							"value": "27.61395603"
+						},
+						{
+							"key": "lat",
+							"value": "53.85574139"
+						},
+						{
+							"key": "begin",
+							"value": "2014-02-01"
+						},
+						{
+							"key": "api_key",
+							"value": "KTn8EftUMjDZLa7NmZC4RxzdSphV9ypdqFpsss1e"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

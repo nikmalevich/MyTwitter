@@ -1,0 +1,91 @@
+{
+	"info": {
+		"_postman_id": "64c9d302-102c-4702-8870-570304dc18af",
+		"name": "UK Police",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "streetCrimes",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://data.police.uk/api/crimes-street/all-crime?lat=51.4816865&lng=-0.19196366",
+					"protocol": "https",
+					"host": [
+						"data",
+						"police",
+						"uk"
+					],
+					"path": [
+						"api",
+						"crimes-street",
+						"all-crime"
+					],
+					"query": [
+						{
+							"key": "lat",
+							"value": "51.4816865"
+						},
+						{
+							"key": "lng",
+							"value": "-0.19196366"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "outcomesCrime",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://data.police.uk/api/outcomes-for-crime/590d68b69228a9ff95b675bb4af591b38de561aa03129dc09a03ef34f537588c",
+					"protocol": "https",
+					"host": [
+						"data",
+						"police",
+						"uk"
+					],
+					"path": [
+						"api",
+						"outcomes-for-crime",
+						"590d68b69228a9ff95b675bb4af591b38de561aa03129dc09a03ef34f537588c"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "categoriesCrimes",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://data.police.uk/api/crime-categories?date=2020-03",
+					"protocol": "https",
+					"host": [
+						"data",
+						"police",
+						"uk"
+					],
+					"path": [
+						"api",
+						"crime-categories"
+					],
+					"query": [
+						{
+							"key": "date",
+							"value": "2020-03"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

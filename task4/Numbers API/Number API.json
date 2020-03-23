@@ -1,0 +1,70 @@
+{
+	"info": {
+		"_postman_id": "29881934-b2d1-4676-9f96-69a94c8c20e7",
+		"name": "Number API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "8math",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://numbersapi.com/8/math",
+					"protocol": "http",
+					"host": [
+						"numbersapi",
+						"com"
+					],
+					"path": [
+						"8",
+						"math"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "9/8date",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://numbersapi.com/9/8/date",
+					"protocol": "http",
+					"host": [
+						"numbersapi",
+						"com"
+					],
+					"path": [
+						"9",
+						"8",
+						"date"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "randomTrivia",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://numbersapi.com/random",
+					"protocol": "http",
+					"host": [
+						"numbersapi",
+						"com"
+					],
+					"path": [
+						"random"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
