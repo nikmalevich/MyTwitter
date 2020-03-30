@@ -1,3 +1,115 @@
+class PostList {
+    _posts;
+    static _postSchema = {
+        id: val => typeof val === 'string',
+        description: val => typeof val === 'string' && val.length < 200,
+        createdAt: val => Object.prototype.toString.call(val) === '[object Date]',
+        author: val => typeof val === 'string' && val.length > 0,
+        photoLink: val => ((typeof val === 'string') || (typeof val === 'undefined')),
+        hashTags: val => Array.isArray(val),
+        likes: val => Array.isArray(val)
+    };
+
+    constructor(posts = []) {
+        this._posts = posts.filter(post => PostList.validate(post));
+    }
+
+    static _validateSchema(validateOver = {}, post = {}) {
+        if ((Object.keys(validateOver).length !== Object.keys(post).length) && (Object.keys(validateOver).length !== Object.keys(post).length + 1)) {
+            console.log('Mismatching number of keys!');
+
+            return false;
+        }
+
+        let errors = Object.keys(validateOver)
+            .filter(key => !(PostList._postSchema)[key]?.(post[key]))
+            .map(key => new Error(key + ' is invalid!'));
+
+        if (errors.length > 0) {
+            errors.forEach(error => console.log(error.message));
+
+            return false;
+        }
+
+        return true;
+    }
+
+    static validate(post = {}) {
+        return PostList._validateSchema(PostList._postSchema, post);
+    }
+
+    getPage(skip = 0, top = 10, filterConfig = {}) {
+        if (!PostList._validateSchema(filterConfig, filterConfig)) {
+            console.log("Wrong filterConfig");
+
+            return [];
+        }
+
+        let filteredPosts = this._posts.filter(post => {
+            for (let key in filterConfig) {
+                if (Array.isArray(filterConfig[key])) {
+                    for (let property in filterConfig[key]) {
+                        if (!post[key].find(elem => elem === filterConfig[key][property])) {
+                            return false;
+                        }
+                    }
+                } else {
+                    if (post[key] !== filterConfig[key]) {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        });
+
+        return filteredPosts.
+            sort((a, b) => a.createdAt > b.createdAt ? 1 : -1).
+            slice(skip, skip + top);
+    }
+
+    get(id = '') {
+        return this._posts.find(post => post.id === id);
+    }
+
+    add(post = {}) {
+        if (PostList.validate(post)) {
+            this._posts.push(post);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    edit(id = '', post = {}) {
+        let oldPost = this.get(id);
+
+        if (oldPost && PostList._validateSchema(post, post)) {
+            Object.keys(post).forEach(key => oldPost[key] = post[key]);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    remove(id = '') {
+        let length = this._posts.length;
+        this._posts = this._posts.filter(post => post.id !== id);
+
+        return length !== this._posts.length;
+    }
+
+    addAll(posts = []) {
+        return posts.filter(post => !this.add(post));
+    }
+
+    clear() {
+        this._posts = [];
+    }
+}
+
 let posts = [
     {
         id: '1',
@@ -172,121 +284,12 @@ let posts = [
     }
 ];
 
-let postList = (function () {
-    let postSchema = {
-        id: val => typeof val === 'string',
-        description: val => typeof val === 'string' && val.length < 200,
-        createdAt: val => Object.prototype.toString.call(val) === '[object Date]',
-        author: val => typeof val === 'string' && val.length > 0,
-        photoLink: val => ((typeof val === 'string') || (typeof val === 'undefined')),
-        hashTags: val => Array.isArray(val),
-        likes: val => Array.isArray(val)
-    };
-
-    function validateSchema(validateOver, post) {
-        if ((Object.keys(validateOver).length !== Object.keys(post).length) && (Object.keys(validateOver).length !== Object.keys(post).length + 1)) {
-            console.log('Mismatching number of keys!');
-
-            return false;
-        }
-
-        let errors = Object.keys(validateOver)
-            .filter(key => !postSchema[key]?.(post[key]))
-            .map(key => new Error(key + ' is invalid!'));
-
-        if (errors.length > 0) {
-            errors.forEach(error => console.log(error.message));
-
-            return false;
-        }
-
-        return true;
+const postList = new PostList(posts.concat([
+    {
+        id: '1',
+        a: 15
     }
-
-    function validatePost(post) {
-        return validateSchema(postSchema, post);
-    }
-
-   function getPosts(skip, top, filterConfig) {
-       let filteredPosts = posts;
-
-       if (filterConfig) {
-            if (!validateSchema(filterConfig, filterConfig)) {
-                console.log("Wrong filterConfig");
-
-                return [];
-            }
-
-            filteredPosts = posts.filter(post => {
-                for (let key in filterConfig) {
-                    if (Array.isArray(filterConfig[key])) {
-                        for (let property in filterConfig[key]) {
-                            if (!post[key].find(elem => elem === filterConfig[key][property])) {
-                                return false;
-                            }
-                        }
-                    } else {
-                        if (post[key] !== filterConfig[key]) {
-                            return false;
-                        }
-                    }
-                }
-
-                return true;
-            })
-        }
-
-        skip = skip || 0;
-        top = top || 10;
-        
-        return filteredPosts.
-            sort((a, b) => a.createdAt > b.createdAt ? 1 : -1).
-            slice(skip, skip + top);
-   }
-
-    function getPost(id) {
-        return posts.find(post => post.id === id);
-    }
-
-    function addPost(post) {
-        if (validatePost(post)) {
-            posts.push(post);
-
-            return true;
-        }
-
-        return false;
-    }
-    
-    function editPost(id, post) {
-        let oldPost = getPost(id);
-
-        if (oldPost && validateSchema(post, post)) {
-            Object.keys(post).forEach(key => oldPost[key] = post[key]);
-
-            return true;
-        }
-
-        return false;
-    }
-
-    function removePost(id) {
-        let length = posts.length;
-
-        posts = posts.filter(post => post.id !== id);
-
-        return length !== posts.length;
-    }
-
-    return {
-        getPage: getPosts,
-        getPost: getPost,
-        validatePost: validatePost,
-        addPost: addPost,
-        editPost: editPost,
-        removePost: removePost
-    }
-}());
+]));
 
 console.log(postList.getPage());
 console.log(postList.getPage(3, 4));
@@ -294,13 +297,13 @@ console.log(postList.getPage(0, 10, {description: 'Я люблю есть'}));
 console.log(postList.getPage(0, 4, {
     hashTags: ['гол']
 }));
-console.log(postList.getPost('15'));
-console.log(postList.validatePost(posts[4]));
-console.log(postList.validatePost({
+console.log(postList.get('15'));
+console.log(PostList.validate(posts[4]));
+console.log(PostList.validate({
     author: 'Сергей Сергеев',
     hashTags: ['мясо', 'отпуск']
 }));
-console.log(postList.addPost({
+console.log(postList.add({
     id: '21',
     description: 'Учиться, учиться и еще раз учиться',
     createdAt: new Date('1917-03-17T15:37:00'),
@@ -308,6 +311,16 @@ console.log(postList.addPost({
     hashTags: [],
     likes: []
 }));
-console.log(postList.editPost('3', {createdAt: new Date('2020-02-21T13:03:00')}));
-console.log(postList.removePost('1'));
-console.log(posts);
+console.log(postList.edit('3', {createdAt: new Date('2020-02-21T13:03:00')}));
+console.log(postList.remove('1'));
+console.log(postList.addAll(posts.slice(3, 8)));
+console.log(postList.addAll([
+    {
+        id: '21',
+        description: 'Учиться, учиться и еще раз учиться',
+        createdAt: new Date('1917-03-17T15:37:00'),
+        hashTags: [],
+        likes: []
+    }
+]));
+console.log(postList.clear());
