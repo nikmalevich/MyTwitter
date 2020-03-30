@@ -172,7 +172,7 @@ let posts = [
     }
 ];
 
-let postList = (function () {
+let postsOperations = (function () {
     let postSchema = {
         id: val => typeof val === 'string',
         description: val => typeof val === 'string' && val.length < 200,
@@ -279,7 +279,7 @@ let postList = (function () {
     }
 
     return {
-        getPage: getPosts,
+        getPosts: getPosts,
         getPost: getPost,
         validatePost: validatePost,
         addPost: addPost,
@@ -288,19 +288,19 @@ let postList = (function () {
     }
 }());
 
-console.log(postList.getPage());
-console.log(postList.getPage(3, 4));
-console.log(postList.getPage(0, 10, {description: 'Я люблю есть'}));
-console.log(postList.getPage(0, 4, {
+console.log(postsOperations.getPosts());
+console.log(postsOperations.getPosts(3, 4));
+console.log(postsOperations.getPosts(0, 10, {description: 'Я люблю есть'}));
+console.log(postsOperations.getPosts(0, 4, {
     hashTags: ['гол']
 }));
-console.log(postList.getPost('15'));
-console.log(postList.validatePost(posts[4]));
-console.log(postList.validatePost({
+console.log(postsOperations.getPost('15'));
+console.log(postsOperations.validatePost(posts[4]));
+console.log(postsOperations.validatePost({
     author: 'Сергей Сергеев',
     hashTags: ['мясо', 'отпуск']
 }));
-console.log(postList.addPost({
+console.log(postsOperations.addPost({
     id: '21',
     description: 'Учиться, учиться и еще раз учиться',
     createdAt: new Date('1917-03-17T15:37:00'),
@@ -308,6 +308,6 @@ console.log(postList.addPost({
     hashTags: [],
     likes: []
 }));
-console.log(postList.editPost('3', {createdAt: new Date('2020-02-21T13:03:00')}));
-console.log(postList.removePost('1'));
+console.log(postsOperations.editPost('3', {createdAt: new Date('2020-02-21T13:03:00')}));
+console.log(postsOperations.removePost('1'));
 console.log(posts);
