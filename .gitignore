@@ -5,3 +5,7 @@
 .idea/
 
 out/
+
+node_modules/
+
+.vscode/
