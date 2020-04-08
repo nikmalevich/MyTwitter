@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PostDAO {
-    Optional<Post> get(Long id);
+    Optional<Post> get(long id);
     List<Post> getPage(FilterForm filterForm);
     boolean add(Post post);
     boolean edit(Post post);
-    boolean remove(Long id);
+    boolean remove(long id);
 }

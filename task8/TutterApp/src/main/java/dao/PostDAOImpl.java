@@ -1,38 +1,47 @@
 package dao;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import forms.FilterForm;
 import models.Constants;
 import models.Post;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class PostDAOImpl implements PostDAO {
     private static List<Post> posts;
+    private static Logger logger;
+
+    static {
+        try {
+            LogManager.getLogManager().readConfiguration(new FileInputStream("D:\\GitHub\\MyTwitter\\task8\\TutterApp\\src\\main\\resources\\log.config"));
+
+            logger = Logger.getLogger(PostDAOImpl.class.getName());
+        } catch (Exception ignored) {
+        }
+    }
 
     public PostDAOImpl() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.setDateFormat(new SimpleDateFormat(Constants.DATE_FORMAT));
-
         try {
-            posts = objectMapper.readValue(new File(Constants.PATH), new TypeReference<>() {
+            posts = Constants.objectMapper.readValue(new File(Constants.PATH), new TypeReference<>() {
             });
         } catch (IOException e) {
             posts = new ArrayList<>();
 
-            System.out.println(e.getMessage());
+           logger.log(Level.SEVERE, e.getMessage());
         }
     }
 
     @Override
-    public Optional<Post> get(Long id) {
-        return posts.stream().filter(post -> post.getId().equals(id)).findAny();
+    public Optional<Post> get(long id) {
+        return posts.stream().filter(post -> post.getId() == id).findAny();
     }
 
     @Override
@@ -49,7 +58,7 @@ public class PostDAOImpl implements PostDAO {
 
     @Override
     public boolean add(Post post) {
-        if (!get(post.getId()).isPresent()) {
+        if (get(post.getId()).isEmpty()) {
             posts.add(post);
             saveToFile();
 
@@ -84,8 +93,8 @@ public class PostDAOImpl implements PostDAO {
     }
 
     @Override
-    public boolean remove(Long id) {
-        if (posts.removeIf(post -> post.getId().equals(id))) {
+    public boolean remove(long id) {
+        if (posts.removeIf(post -> post.getId() == id)) {
             saveToFile();
 
             return true;
@@ -97,16 +106,12 @@ public class PostDAOImpl implements PostDAO {
     private void saveToFile() {
         try {
             FileWriter fileWriter = new FileWriter(Constants.PATH);
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.setDateFormat(new SimpleDateFormat(Constants.DATE_FORMAT));
 
-            System.out.println(objectMapper.writeValueAsString(posts));
-
-            fileWriter.write(objectMapper.writeValueAsString(posts));
+            fileWriter.write(Constants.objectMapper.writeValueAsString(posts));
 
             fileWriter.close();
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage());
         }
     }
 }

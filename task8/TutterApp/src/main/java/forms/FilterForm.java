@@ -9,8 +9,8 @@ public class FilterForm {
     private List<String> hashTags;
     private Date fromDate;
     private Date toDate;
-    private Integer skip;
-    private Integer quantity;
+    private int skip;
+    private int quantity;
 
     public String getAuthor() {
         return author;
@@ -44,19 +44,19 @@ public class FilterForm {
         this.toDate = toDate;
     }
 
-    public Integer getSkip() {
+    public int getSkip() {
         return skip;
     }
 
-    public void setSkip(Integer skip) {
+    public void setSkip(int skip) {
         this.skip = skip;
     }
 
-    public Integer getQuantity() {
+    public int getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(Integer quantity) {
+    public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
 
@@ -65,12 +65,12 @@ public class FilterForm {
         if (this == o) return true;
         if (!(o instanceof FilterForm)) return false;
         FilterForm that = (FilterForm) o;
-        return Objects.equals(author, that.author) &&
+        return skip == that.skip &&
+                quantity == that.quantity &&
+                Objects.equals(author, that.author) &&
                 Objects.equals(hashTags, that.hashTags) &&
                 Objects.equals(fromDate, that.fromDate) &&
-                Objects.equals(toDate, that.toDate) &&
-                Objects.equals(skip, that.skip) &&
-                Objects.equals(quantity, that.quantity);
+                Objects.equals(toDate, that.toDate);
     }
 
     @Override

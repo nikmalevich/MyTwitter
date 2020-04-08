@@ -1,6 +1,5 @@
 package servlets;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import dao.PostDAO;
 import dao.PostDAOImpl;
 import models.Constants;
@@ -11,57 +10,76 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 @WebServlet("/post")
 public class PostServlet extends HttpServlet {
     private PostDAO postDAO = new PostDAOImpl();
+    private static Logger logger;
+
+    static {
+        try {
+            LogManager.getLogManager().readConfiguration(new FileInputStream("D:\\GitHub\\MyTwitter\\task8\\TutterApp\\src\\main\\resources\\log.config"));
+
+            logger = Logger.getLogger(PostServlet.class.getName());
+        } catch (Exception ignored) {
+        }
+    }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        Long id = Long.parseLong(req.getParameter("id"));
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.setDateFormat(new SimpleDateFormat(Constants.DATE_FORMAT));
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
+        long id = Long.parseLong(req.getParameter("id"));
 
         Optional<Post> post = postDAO.get(id);
 
         if (post.isPresent()) {
-            resp.getWriter().write(objectMapper.writeValueAsString(postDAO.get(id).get()));
+            try {
+                resp.getWriter().write(Constants.objectMapper.writeValueAsString(postDAO.get(id).get()));
+            } catch (IOException e) {
+                logger.log(Level.SEVERE, e.getMessage());
+            }
         }
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
         try {
-            String json = req.getReader().lines().reduce("", (accumulator, actual) -> accumulator + actual);
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.setDateFormat(new SimpleDateFormat(Constants.DATE_FORMAT));
+            String json = req.getReader().lines().reduce("", (accumulator, actual) -> accumulator + actual);;
 
-            Post post = objectMapper.readValue(json, Post.class);
+            Post post = Constants.objectMapper.readValue(json, Post.class);
 
             resp.getWriter().write(Boolean.toString(postDAO.add(post)));
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage());
         }
     }
 
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String json = req.getReader().lines().reduce("", (accumulator, actual) -> accumulator + actual);
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.setDateFormat(new SimpleDateFormat(Constants.DATE_FORMAT));
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) {
+        try {
+            String json = req.getReader().lines().reduce("", (accumulator, actual) -> accumulator + actual);
 
-        Post post = objectMapper.readValue(json, Post.class);
+            Post post = Constants.objectMapper.readValue(json, Post.class);
 
-        resp.getWriter().write(Boolean.toString(postDAO.edit(post)));
+            resp.getWriter().write(Boolean.toString(postDAO.edit(post)));
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, e.getMessage());
+        }
     }
 
     @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        Long id = Long.parseLong(req.getParameter("id"));
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) {
+        long id = Long.parseLong(req.getParameter("id"));
 
-        resp.getWriter().write(Boolean.toString(postDAO.remove(id)));
+        try {
+            resp.getWriter().write(Boolean.toString(postDAO.remove(id)));
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, e.getMessage());
+        }
     }
 }
