@@ -1,0 +1,271 @@
+@media screen and (min-width: 951px) {
+    body {
+        font-size: 40px;
+    }
+
+    p.product-name {
+        font-size: 80px;
+    }
+
+    div.post-action {
+        width: 80px;
+    }
+}
+
+@media screen and (max-width: 950px) {
+    body {
+        font-size: 20px;
+    }
+
+    p.product-name {
+        font-size: 50px;
+    }
+
+    div.post-action {
+        width: 50px;
+    }
+}
+
+body {
+    background-color: #B6D7FF;
+    margin: 0;
+}
+
+header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 130px;
+    background-color: #D4EEEB;
+}
+
+div.logo {
+    float: left;
+    margin: 5px 0 0 5%;
+    height: 130px;
+}
+
+img.logo {
+    height: 70%;
+}
+
+p.logo {
+    margin-top: -15px;
+    font-family: Reenie Beanie;
+    font-size: 40px;
+}
+
+div.log-in-out {
+    float: right;
+    margin-top: 2%;
+    height: 100%;
+    font-family: Roboto;
+    font-size: 0.75em;
+    font-weight: bold;
+}
+
+button.log-in-out, button.see-more, button.add-post {
+    height: 80px;
+    background-color: #E6F0F8;
+    border-radius: 50%;
+    border-width: 2px;
+    border-color: #000000;
+    font-size: 0.75em;
+    font-family: Roboto;
+}
+
+button.log-in-out {
+    width: 150px;
+    margin: -10px 70px 0 0;
+}
+
+button.see-more {
+    width: 150px;
+    margin: 10px 0 10px 45%;
+}
+
+button.add-post {
+    width: 70%;
+    margin: 70px 0 10px 20%;
+}
+
+footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100px;
+    background-color: #D4EEEB;
+}
+
+p.product-name {
+    float: left;
+    margin: 5px 0 0 50px;
+    font-family: Reenie Beanie;
+}
+
+div.product-info {
+    float: right;
+    margin-right: 1%;
+    height: 100px;
+    font-family: Roboto;
+    font-size: 0.5em;
+}
+
+p.product-info {
+    margin-top: 15px;
+}
+
+p.last-update {
+    float: right;
+    margin-top: -15px;
+}
+
+div.line {
+    position: absolute;
+    border-left: 5px solid #000000;
+    top: 130px;
+    bottom: 100px;
+    left: 15%;
+    height: calc(100% - 230px);
+}
+
+div.filters {
+    position: absolute;
+    top: 130px;
+    left: 0;
+    height: calc(100% - 230px);
+    width: 15%;
+    font-family: Roboto;
+    overflow: auto;
+}
+
+p.filters {
+    margin: 50px 0 0 20%;
+    font-size: 1em;
+    font-weight: bold;
+}
+
+label.filters, p.date {
+    font-size: 0.75em;
+    margin: 10px 0 0 10%;
+}
+
+textarea.filters {
+    margin: 5px 0 0 10%;
+    border-radius: 20px;
+    background-color: #ECEEEF;
+    width: 80%;
+    font-size: 0.5em;
+    resize: none;
+}
+
+label.date-filters {
+    display: inline-block;
+    margin-left: 12%;
+    font-size: 0.5em;
+    font-weight: lighter;
+}
+
+input.date {
+    display: inline-block;
+    margin-right: 5%;
+    width: 45%;
+    height: 20px;
+    border-radius: 20px;
+    background-color: #ECEEEF;
+    font-size: 0.375em;
+    font-family: Roboto;
+}
+
+div.posts {
+    position: absolute;
+    top: 130px;
+    left: calc(15% + 5px);
+    height: calc(100% - 230px);
+    width: calc(85% - 5px);
+    font-family: Reenie Beanie;
+    overflow: auto;
+}
+
+div.post {
+    display: inline-block;
+    margin-top: 10px;
+    width: 100%;
+}
+
+div.post-info {
+    float: left;
+    margin-left: 3%;
+    width: 80%;
+}
+
+p.post-tags, p.post-text, p.post-info {
+    margin: 5px 0 5px 0;
+}
+
+p.post-tags {
+    font-size: 0.75em;
+}
+
+p.post-text {
+    font-size: 1em;
+}
+
+p.post-info {
+    font-size: 0.75em;
+}
+
+div.post-action {
+    float: right;
+    margin-right: 1%;
+}
+
+button.like, button.delete, button.edit {
+    height: 0;
+    background-color: #B6D7FF;
+    border-width: 0;
+    font-size: 0.75em;
+}
+
+button.like {
+    float: right;
+    margin-top: 70%;
+}
+
+button.delete {
+    display: inline-block;
+}
+
+button.edit {
+    display: inline-block;
+}
+
+div.wavy-line {
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 0;
+    margin-top: auto;
+    width: 101%;
+    height: 40px;
+    left: -1%;
+}
+
+div.ellipse {
+    position: absolute;
+    background: radial-gradient(ellipse, transparent, transparent 7px, black 7px, black 10px, transparent 11px);
+    background-size: 36px 40px;
+    width: 100%;
+    height: 20px;
+}
+
+div.ellipse2 {
+    top: 20px;
+    left: 18px;
+    background-position: 0 -20px;
+}
+
+img.post-image {
+    height: 100px;
+}
