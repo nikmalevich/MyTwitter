@@ -10,6 +10,7 @@
         <link href="http://fonts.googleapis.com/css?family=Reenie+Beanie" rel="stylesheet">
         <link href="http://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
         <script src="https://kit.fontawesome.com/9b7f939454.js" crossorigin="anonymous"></script>
+        <script src="resources/js/script.js"></script>
     </head>
 
     <body>
@@ -19,7 +20,7 @@
             <p class="logo">Tutter</p>
         </div>
 
-        <div class="log-in-out">nikmalevich <button class="log-in-out">Log out</button></div>
+        <div class="log-in-out" id="log-in-out">nikmalevich <button class="log-in-out">Log out</button></div>
     </header>
 
     <main>
@@ -27,204 +28,38 @@
 
         <div class="filters">
             <p class="filters">Filters</p>
-            <label for="name" class="filters">name:</label>
-            <textarea id="name" class="filters" rows="1"></textarea>
-            <label for="tag" class="filters">tag:</label>
-            <textarea id="tag" class="filters" rows="1"></textarea>
+            <label for="filterName" class="filters">name:</label>
+            <textarea id="filterName" class="filters" rows="1"></textarea>
+            <label for="filterTag" class="filters">tag:</label>
+            <textarea id="filterTag" class="filters" rows="1"></textarea>
             <p class="date">date:</p>
-            <label for="from" class="date-filters">from</label>
-            <input type="date" id="from" name="from" value="2020-03-02" min="2020-01-01" max="2020-12-31" class="date">
-            <label for="to" class="date-filters">to</label>
-            <input type="date" id="to" name="to" value="2020-03-02" min="2020-01-01" max="2020-12-31" class="date">
+            <label for="filterDateFrom" class="date-filters">from</label>
+            <input type="date" id="filterDateFrom" name="from" value="2020-03-02" min="2020-01-01" max="2020-12-31" class="date">
+            <label for="filterDateTo" class="date-filters">to</label>
+            <input type="date" id="filterDateTo" name="to" value="2020-03-02" min="2020-01-01" max="2020-12-31" class="date">
             <button class="add-post">add Post</button>
         </div>
 
-        <div class="posts">
-            <div class="post">
-                <div class="post-info">
-                    <p class="post-tags">#work #hard #IT</p>
-                    <p class="post-text">I like my work. I work every day. I’m hard-working.</p>
-                    <p class="post-info">23.02.2020 20:35 from nikmal</p>
+        <div class="posts" id="postContainer">
+            <template id="postTemplate">
+                <div class="post">
+                    <div class="post-info">
+                        <p class="post-tags"></p>
+                        <img class="post-image">
+                        <p class="post-text"></p>
+                        <p class="post-info"></p>
+                    </div>
+                    <div class="post-action">
+                        <button class="fas fa-ellipsis-v edit"></button>
+                        <button class="fas fa-times delete"></button>
+                        <button class="fas fa-heart like"></button>
+                    </div>
+                    <div class="wavy-line">
+                        <div class="ellipse"></div>
+                        <div class="ellipse ellipse2"></div>
+                    </div>
                 </div>
-                <div class="post-action">
-                    <button class="fas fa-ellipsis-v edit"></button>
-                    <button class="fas fa-times delete"></button>
-                    <button class="fas fa-heart like"></button>
-                </div>
-                <div class="wavy-line">
-                    <div class="ellipse"></div>
-                    <div class="ellipse ellipse2"></div>
-                </div>
-            </div>
-
-            <div class="post">
-                <div class="post-info">
-                    <p class="post-tags">#relax #sea #sun</p>
-                    <p class="post-text">
-                        <img src="resources/images/postImage.svg" class="post-image">
-                        I like to relax! I don’t like work. My boss is angry!
-                    </p>
-                    <p class="post-info">23.02.2020 19:35 from user2</p>
-                </div>
-                <div class="post-action">
-                    <button class="fas fa-ellipsis-v edit"></button>
-                    <button class="fas fa-times delete"></button>
-                    <button class="fas fa-heart like"></button>
-                </div>
-                <div class="wavy-line">
-                    <div class="ellipse"></div>
-                    <div class="ellipse ellipse2"></div>
-                </div>
-            </div>
-
-            <div class="post">
-                <div class="post-info">
-                    <p class="post-tags">#relax #sea #sun</p>
-                    <p class="post-text">
-                        <img src="resources/images/postImage.svg" class="post-image">
-                        I like to relax! I don’t like work. My boss is angry!
-                    </p>
-                    <p class="post-info">23.02.2020 19:35 from user2</p>
-                </div>
-                <div class="post-action">
-                    <button class="fas fa-ellipsis-v edit"></button>
-                    <button class="fas fa-times delete"></button>
-                    <button class="fas fa-heart like"></button>
-                </div>
-                <div class="wavy-line">
-                    <div class="ellipse"></div>
-                    <div class="ellipse ellipse2"></div>
-                </div>
-            </div>
-
-            <div class="post">
-                <div class="post-info">
-                    <p class="post-tags">#work #hard #IT</p>
-                    <p class="post-text">I like my work. I work every day. I’m hard-working.</p>
-                    <p class="post-info">23.02.2020 20:35 from nikmal</p>
-                </div>
-                <div class="post-action">
-                    <button class="fas fa-ellipsis-v edit"></button>
-                    <button class="fas fa-times delete"></button>
-                    <button class="fas fa-heart like"></button>
-                </div>
-                <div class="wavy-line">
-                    <div class="ellipse"></div>
-                    <div class="ellipse ellipse2"></div>
-                </div>
-            </div>
-
-            <div class="post">
-                <div class="post-info">
-                    <p class="post-tags">#work #hard #IT</p>
-                    <p class="post-text">I like my work. I work every day. I’m hard-working.</p>
-                    <p class="post-info">23.02.2020 20:35 from nikmal</p>
-                </div>
-                <div class="post-action">
-                    <button class="fas fa-ellipsis-v edit"></button>
-                    <button class="fas fa-times delete"></button>
-                    <button class="fas fa-heart like"></button>
-                </div>
-                <div class="wavy-line">
-                    <div class="ellipse"></div>
-                    <div class="ellipse ellipse2"></div>
-                </div>
-            </div>
-
-            <div class="post">
-                <div class="post-info">
-                    <p class="post-tags">#relax #sea #sun</p>
-                    <p class="post-text">
-                        <img src="resources/images/postImage.svg" class="post-image">
-                        I like to relax! I don’t like work. My boss is angry!
-                    </p>
-                    <p class="post-info">23.02.2020 19:35 from user2</p>
-                </div>
-                <div class="post-action">
-                    <button class="fas fa-ellipsis-v edit"></button>
-                    <button class="fas fa-times delete"></button>
-                    <button class="fas fa-heart like"></button>
-                </div>
-                <div class="wavy-line">
-                    <div class="ellipse"></div>
-                    <div class="ellipse ellipse2"></div>
-                </div>
-            </div>
-
-            <div class="post">
-                <div class="post-info">
-                    <p class="post-tags">#relax #sea #sun</p>
-                    <p class="post-text">
-                        <img src="resources/images/postImage.svg" class="post-image">
-                        I like to relax! I don’t like work. My boss is angry!
-                    </p>
-                    <p class="post-info">23.02.2020 19:35 from user2</p>
-                </div>
-                <div class="post-action">
-                    <button class="fas fa-ellipsis-v edit"></button>
-                    <button class="fas fa-times delete"></button>
-                    <button class="fas fa-heart like"></button>
-                </div>
-                <div class="wavy-line">
-                    <div class="ellipse"></div>
-                    <div class="ellipse ellipse2"></div>
-                </div>
-            </div>
-
-            <div class="post">
-                <div class="post-info">
-                    <p class="post-tags">#work #hard #IT</p>
-                    <p class="post-text">I like my work. I work every day. I’m hard-working.</p>
-                    <p class="post-info">23.02.2020 20:35 from nikmal</p>
-                </div>
-                <div class="post-action">
-                    <button class="fas fa-ellipsis-v edit"></button>
-                    <button class="fas fa-times delete"></button>
-                    <button class="fas fa-heart like"></button>
-                </div>
-                <div class="wavy-line">
-                    <div class="ellipse"></div>
-                    <div class="ellipse ellipse2"></div>
-                </div>
-            </div>
-
-            <div class="post">
-                <div class="post-info">
-                    <p class="post-tags">#work #hard #IT</p>
-                    <p class="post-text">I like my work. I work every day. I’m hard-working.</p>
-                    <p class="post-info">23.02.2020 20:35 from nikmal</p>
-                </div>
-                <div class="post-action">
-                    <button class="fas fa-ellipsis-v edit"></button>
-                    <button class="fas fa-times delete"></button>
-                    <button class="fas fa-heart like"></button>
-                </div>
-                <div class="wavy-line">
-                    <div class="ellipse"></div>
-                    <div class="ellipse ellipse2"></div>
-                </div>
-            </div>
-
-            <div class="post">
-                <div class="post-info">
-                    <p class="post-tags">#relax #sea #sun</p>
-                    <p class="post-text">
-                        <img src="resources/images/postImage.svg" class="post-image">
-                        I like to relax! I don’t like work. My boss is angry!
-                    </p>
-                    <p class="post-info">23.02.2020 19:35 from user2</p>
-                </div>
-                <div class="post-action">
-                    <button class="fas fa-ellipsis-v edit"></button>
-                    <button class="fas fa-times delete"></button>
-                    <button class="fas fa-heart like"></button>
-                </div>
-                <div class="wavy-line">
-                    <div class="ellipse"></div>
-                    <div class="ellipse ellipse2"></div>
-                </div>
-            </div>
-
+            </template>
             <button class="see-more">see More</button>
         </div>
     </main>

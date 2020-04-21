@@ -21,7 +21,7 @@ public class PostDAOImpl implements PostDAO {
 
     static {
         try {
-            LogManager.getLogManager().readConfiguration(new FileInputStream("D:\\GitHub\\MyTwitter\\task8\\TutterApp\\src\\main\\resources\\log.config"));
+            LogManager.getLogManager().readConfiguration(new FileInputStream("D:\\GitHub\\MyTwitter\\task8\\TutterApp\\src\\main\\webapp\\resources\\log.config"));
 
             logger = Logger.getLogger(PostDAOImpl.class.getName());
         } catch (Exception ignored) {
