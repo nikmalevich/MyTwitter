@@ -10,57 +10,88 @@
         <link href="http://fonts.googleapis.com/css?family=Reenie+Beanie" rel="stylesheet">
         <link href="http://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
         <script src="https://kit.fontawesome.com/9b7f939454.js" crossorigin="anonymous"></script>
-        <script src="resources/js/script.js"></script>
+        <script src="resources/js/model.js"></script>
+        <script src="resources/js/view.js"></script>
+        <script src="resources/js/controller.js"></script>
     </head>
 
     <body>
     <header>
-        <div class="logo">
+        <div id="logo" class="logo">
             <img src="resources/images/logo.svg" class="logo">
             <p class="logo">Tutter</p>
         </div>
 
-        <div class="log-in-out" id="log-in-out">nikmalevich <button class="log-in-out">Log out</button></div>
+        <div class="log-in-out" id="log-in-out"><span id="username"></span><button class="log-in-out" id="logInOut">Log in</button></div>
     </header>
 
     <main>
-        <div class="line"></div>
+        <div id="mainPage">
+            <div class="line"></div>
 
-        <div class="filters">
-            <p class="filters">Filters</p>
-            <label for="filterName" class="filters">name:</label>
-            <textarea id="filterName" class="filters" rows="1"></textarea>
-            <label for="filterTag" class="filters">tag:</label>
-            <textarea id="filterTag" class="filters" rows="1"></textarea>
-            <p class="date">date:</p>
-            <label for="filterDateFrom" class="date-filters">from</label>
-            <input type="date" id="filterDateFrom" name="from" value="2020-03-02" min="2020-01-01" max="2020-12-31" class="date">
-            <label for="filterDateTo" class="date-filters">to</label>
-            <input type="date" id="filterDateTo" name="to" value="2020-03-02" min="2020-01-01" max="2020-12-31" class="date">
-            <button class="add-post">add Post</button>
+            <form class="filters" id="filterForm">
+                <p class="filters">Filters</p>
+                <label for="filterName" class="filters">name:</label>
+                <input id="filterName" type="text" class="filters">
+                <label for="filterTag" class="filters">tag:</label>
+                <input id="filterTag" type="text" class="filters">
+                <p class="date">date:</p>
+                <label for="filterDateFrom" class="date-filters">from</label>
+                <input type="date" id="filterDateFrom" name="from" value="2019-01-01" class="date">
+                <label for="filterDateTo" class="date-filters">to</label>
+                <input type="date" id="filterDateTo" name="to" value="2021-01-01" class="date">
+                <button class="add-post" id="addPost">add Post</button>
+            </form>
+
+            <div class="posts" id="postContainer">
+                <template id="postTemplate">
+                    <div class="post">
+                        <div class="post-info">
+                            <p class="post-tags"></p>
+                            <img class="post-image">
+                            <p class="post-text"></p>
+                            <p class="post-info"></p>
+                        </div>
+                        <div class="post-action">
+                            <button class="fas fa-ellipsis-v edit"></button>
+                            <button class="fas fa-times delete"></button>
+                            <button class="fas fa-heart like"></button>
+                        </div>
+                        <div class="wavy-line">
+                            <div class="ellipse"></div>
+                            <div class="ellipse ellipse2"></div>
+                        </div>
+                    </div>
+                </template>
+                <button class="see-more" id="seeMore">see More</button>
+            </div>
         </div>
 
-        <div class="posts" id="postContainer">
-            <template id="postTemplate">
-                <div class="post">
-                    <div class="post-info">
-                        <p class="post-tags"></p>
-                        <img class="post-image">
-                        <p class="post-text"></p>
-                        <p class="post-info"></p>
-                    </div>
-                    <div class="post-action">
-                        <button class="fas fa-ellipsis-v edit"></button>
-                        <button class="fas fa-times delete"></button>
-                        <button class="fas fa-heart like"></button>
-                    </div>
-                    <div class="wavy-line">
-                        <div class="ellipse"></div>
-                        <div class="ellipse ellipse2"></div>
-                    </div>
-                </div>
-            </template>
-            <button class="see-more">see More</button>
+        <div id="postPage" class="not-main-page">
+            <div class="edit-post-text">
+                <label for="postText" class="edit-post">Text of post:</label>
+                <br>
+                <textarea id="postText" class="edit-post-text"></textarea>
+                <br>
+                <p id="incorrectPostData" class="incorrect-data">Incorrect text of post</p>
+                <label for="postTags" class="edit-post">Tags:</label>
+                <br>
+                <input id="postTags" type="text" class="edit-post-tags">
+            </div>
+            <div class="edit-post-image">
+                <input type="image">
+            </div>
+            <button class="done" id="done">Done</button>
+        </div>
+
+        <div id="logInPage" class="not-main-page">
+            <label for="userLogin" class="login">Login:</label>
+            <input type="text" id="userLogin" class="login">
+            <br>
+            <label for="userPassword" class="login">Password:</label>
+            <input type="password" id="userPassword" class="password">
+            <p id="incorrectLogInData" class="incorrect-data">Incorrect login or password</p>
+            <button class="login" id="login">Log in</button>
         </div>
     </main>
 
@@ -68,7 +99,7 @@
         <p class="product-name">Tutter</p>
         <div class="product-info">
             <p class="product-info">Created by Nikita Malevich, 2 course, 6 group nikita.malewich@gmail.com</p>
-            <p class="last-update">Last update: 01.03.2020</p>
+            <p class="last-update">Last update: 27.04.2020</p>
         </div>
     </footer>
     </body>
