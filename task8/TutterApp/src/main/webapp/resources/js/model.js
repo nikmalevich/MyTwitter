@@ -1,3 +1,23 @@
+startPosts = [
+    {
+        id: '1',
+        description: 'aaa',
+        createdAt: new Date('2020-03-17T23:00:00'),
+        author: 'Ivan',
+        hashTags: ['covid-19'],
+        likes: ['Ivan']
+    },
+    {
+        id: '2',
+        description: 'bbb',
+        createdAt: new Date('2020-03-21T12:58:00'),
+        author: 'anna',
+        photoLink: 'https://images.aif.ru/017/670/9a6e8711e058b9c97bcbe0ef1061c82c.jpg',
+        hashTags: ['burger'],
+        likes: []
+    }
+];
+
 class Model {
     _posts;
     _curNumFilterPosts;
@@ -17,12 +37,22 @@ class Model {
         let keyPosts = Object.keys(localStorage);
         this._posts = [];
 
-        for (let i = 0; i < keyPosts.length; i++) {
-            let post = JSON.parse(localStorage.getItem(keyPosts[i]));
+        if (keyPosts.length === 0) {
+            for (let post in startPosts) {
+                this.add(post);
+            }
+        } else {
+            for (let i = 0; i < keyPosts.length; i++) {
+                try {
+                    let post = JSON.parse(localStorage.getItem(keyPosts[i]));
 
-            post.createdAt = new Date(post.createdAt);
+                    post.createdAt = new Date(post.createdAt);
 
-            this._posts.push(post);
+                    this._posts.push(post);
+                } catch (e) {
+                    console.log('Parse JSON error');
+                }
+            }
         }
     }
 
@@ -124,15 +154,6 @@ class Model {
         }
 
         return false;
-    }
-
-    addAll(posts = []) {
-        return posts.filter(post => !this.add(post));
-    }
-
-    clear() {
-        this._posts = [];
-        localStorage.clear();
     }
 
     like(id = '', user = '') {

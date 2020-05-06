@@ -43,7 +43,7 @@ class Controller {
         }
     }
 
-    static logo(event) {
+    static logo() {
         Controller._view._mainPage.setAttribute('style', 'display: block');
         Controller._view._postPage.setAttribute('style', 'display: none');
         Controller._view._logInPage.setAttribute('style', 'display: none');
@@ -57,7 +57,7 @@ class Controller {
         Controller.getPage(0, Controller._curNumVisiblePosts, Controller._curFilter);
     }
 
-    static logInOut(event) {
+    static logInOut() {
         if (Controller._curUser === '') {
             Controller._view._mainPage.setAttribute('style', 'display: none');
             Controller._view._postPage.setAttribute('style', 'display: none');
@@ -67,6 +67,7 @@ class Controller {
             Controller._view._logInOutButton.textContent = 'Log in';
             Controller._view._currentUser.textContent = '';
             Controller._view._addPostButton.setAttribute('style', 'display: none');
+            Controller._view._addPostButton.disabled = true;
 
             Controller.getPage(0, Controller._curNumVisiblePosts, Controller._curFilter);
         }
@@ -85,6 +86,7 @@ class Controller {
         if (name !== '') {
             Controller._curFilter.author = name;
         }
+
         if (hashTags !== '') {
             Controller._curFilter.hashTags = hashTags.split(' ');
         }
@@ -127,7 +129,7 @@ class Controller {
         }
     }
 
-    static seeMore(event) {
+    static seeMore() {
         Controller._curNumVisiblePosts += 10;
 
         Controller.getPage(0, Controller._curNumVisiblePosts, Controller._curFilter);
@@ -142,7 +144,7 @@ class Controller {
         event.preventDefault();
     }
 
-    static donePost(event) {
+    static donePost() {
         let description = Controller._view._postText.value;
         let hashTags = Controller._view._postTags.value.split(' ');
 
@@ -195,6 +197,7 @@ class Controller {
             Controller._view._mainPage.setAttribute('style', 'display: block');
             Controller._view._logInOutButton.textContent = 'Log out';
             Controller._view._addPostButton.setAttribute('style', 'display: block');
+            Controller._view._addPostButton.disabled = false;
 
             Controller.getPage(0, Controller._curNumVisiblePosts, Controller._curFilter);
         } else {

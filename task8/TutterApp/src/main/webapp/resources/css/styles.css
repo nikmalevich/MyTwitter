@@ -46,11 +46,11 @@ div.logo {
     height: 130px;
 }
 
-img.logo {
+.logo img {
     height: 70%;
 }
 
-p.logo {
+.logo p {
     margin-top: -15px;
     font-family: Reenie Beanie;
     font-size: 40px;

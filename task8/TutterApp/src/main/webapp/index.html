@@ -18,11 +18,14 @@
     <body>
     <header>
         <div id="logo" class="logo">
-            <img src="resources/images/logo.svg" class="logo">
-            <p class="logo">Tutter</p>
+            <img src="resources/images/logo.svg">
+            <p>Tutter</p>
         </div>
 
-        <div class="log-in-out" id="log-in-out"><span id="username"></span><button class="log-in-out" id="logInOut">Log in</button></div>
+        <div class="log-in-out" id="log-in-out">
+            <span id="username"></span>
+            <button class="log-in-out" id="logInOut">Log in</button>
+        </div>
     </header>
 
     <main>
@@ -40,7 +43,7 @@
                 <input type="date" id="filterDateFrom" name="from" value="2019-01-01" class="date">
                 <label for="filterDateTo" class="date-filters">to</label>
                 <input type="date" id="filterDateTo" name="to" value="2021-01-01" class="date">
-                <button class="add-post" id="addPost">add Post</button>
+                <button class="add-post" id="addPost" disabled>add Post</button>
             </form>
 
             <div class="posts" id="postContainer">

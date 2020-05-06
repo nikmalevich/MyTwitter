@@ -90,14 +90,6 @@ class View {
         this._postContainer.insertBefore(postView, this._postContainer.lastElementChild);
     }
 
-    editPost(id = '', post = {}) {
-        let postView = document.importNode(this._postTemplate.content, true);
-
-        this._setPostView(postView, post);
-
-        document.getElementById(id)?.replaceWith(postView);
-    }
-
     removePost(id = '') {
         document.getElementById(id)?.remove();
     }
