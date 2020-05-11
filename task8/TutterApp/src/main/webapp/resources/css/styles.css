@@ -46,11 +46,11 @@ div.logo {
     height: 130px;
 }
 
-img.logo {
+.logo img {
     height: 70%;
 }
 
-p.logo {
+.logo p {
     margin-top: -15px;
     font-family: Reenie Beanie;
     font-size: 40px;
@@ -65,7 +65,7 @@ div.log-in-out {
     font-weight: bold;
 }
 
-button.log-in-out, button.see-more, button.add-post {
+button.log-in-out, button.see-more, button.add-post, button.done, button.login {
     height: 80px;
     background-color: #E6F0F8;
     border-radius: 50%;
@@ -86,6 +86,7 @@ button.see-more {
 }
 
 button.add-post {
+    display: none;
     width: 70%;
     margin: 70px 0 10px 20%;
 }
@@ -131,7 +132,7 @@ div.line {
     height: calc(100% - 230px);
 }
 
-div.filters {
+form.filters {
     position: absolute;
     top: 130px;
     left: 0;
@@ -152,7 +153,7 @@ label.filters, p.date {
     margin: 10px 0 0 10%;
 }
 
-textarea.filters {
+input.filters {
     margin: 5px 0 0 10%;
     border-radius: 20px;
     background-color: #ECEEEF;
@@ -267,5 +268,72 @@ div.ellipse2 {
 }
 
 img.post-image {
+    display: inline-block;
     height: 100px;
+}
+
+div.not-main-page {
+    position: absolute;
+    top: 130px;
+    height: calc(100% - 230px);
+    width: 100%;
+    font-family: Roboto;
+}
+
+div.edit-post-text, div.edit-post-image {
+    display: inline-block;
+}
+
+div.edit-post-text {
+    width: 40%;
+    margin-top: 2%;
+    margin-left: 15%;
+}
+
+textarea.edit-post-text, input.edit-post-tags {
+    resize: none;
+    width: 100%;
+    border-radius: 20px;
+    font-size: 1em;
+    background-color: #ECEEEF;
+    font-family: Reenie Beanie;
+}
+
+textarea.edit-post-text {
+    height: 5em;
+}
+
+button.done, button.login {
+    width: 150px;
+    display: block;
+    margin-top: 5%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+label.login {
+    margin-left: 20%;
+}
+
+input.login, input.password {
+    resize: none;
+    border-radius: 20px;
+    font-size: 0.75em;
+    background-color: #ECEEEF;
+    font-family: Roboto;
+}
+
+input.login {
+    margin-top: 10%;
+}
+
+input.password {
+    margin-top: 5%;
+}
+
+p.incorrect-data {
+    margin-left: 20%;
+    color: #FF0000;
+    font-size: 0.7em;
+    visibility: hidden;
 }
