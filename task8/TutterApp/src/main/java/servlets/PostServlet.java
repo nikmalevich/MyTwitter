@@ -2,15 +2,15 @@ package servlets;
 
 import dao.PostDAO;
 import dao.PostDAOImpl;
+import forms.EditPostForm;
+import forms.NewPostForm;
 import models.Constants;
 import models.Post;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -24,7 +24,7 @@ public class PostServlet extends HttpServlet {
 
     static {
         try {
-            LogManager.getLogManager().readConfiguration(new FileInputStream("D:\\GitHub\\MyTwitter\\task8\\TutterApp\\src\\main\\resources\\log.config"));
+            LogManager.getLogManager().readConfiguration(PostServlet.class.getClassLoader().getResourceAsStream("logging.properties"));
 
             logger = Logger.getLogger(PostServlet.class.getName());
         } catch (Exception ignored) {
@@ -33,13 +33,13 @@ public class PostServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
-        long id = Long.parseLong(req.getParameter("id"));
+        int id = Integer.parseInt(req.getParameter("id"));
 
         Optional<Post> post = postDAO.get(id);
 
         if (post.isPresent()) {
             try {
-                resp.getWriter().write(Constants.objectMapper.writeValueAsString(postDAO.get(id).get()));
+                resp.getWriter().write(Constants.objectMapper.writeValueAsString(post.get()));
             } catch (IOException e) {
                 logger.log(Level.SEVERE, e.getMessage());
             }
@@ -49,11 +49,11 @@ public class PostServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
         try {
-            String json = req.getReader().lines().reduce("", (accumulator, actual) -> accumulator + actual);;
+            String json = req.getReader().lines().reduce("", (accumulator, actual) -> accumulator + actual);
 
-            Post post = Constants.objectMapper.readValue(json, Post.class);
+            NewPostForm form = Constants.objectMapper.readValue(json, NewPostForm.class);
 
-            resp.getWriter().write(Boolean.toString(postDAO.add(post)));
+            resp.getWriter().write(Boolean.toString(postDAO.add(form)));
         } catch (IOException e) {
             logger.log(Level.SEVERE, e.getMessage());
         }
@@ -64,9 +64,9 @@ public class PostServlet extends HttpServlet {
         try {
             String json = req.getReader().lines().reduce("", (accumulator, actual) -> accumulator + actual);
 
-            Post post = Constants.objectMapper.readValue(json, Post.class);
+            EditPostForm form = Constants.objectMapper.readValue(json, EditPostForm.class);
 
-            resp.getWriter().write(Boolean.toString(postDAO.edit(post)));
+            resp.getWriter().write(Boolean.toString(postDAO.edit(form)));
         } catch (IOException e) {
             logger.log(Level.SEVERE, e.getMessage());
         }
@@ -74,7 +74,7 @@ public class PostServlet extends HttpServlet {
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) {
-        long id = Long.parseLong(req.getParameter("id"));
+        int id = Integer.parseInt(req.getParameter("id"));
 
         try {
             resp.getWriter().write(Boolean.toString(postDAO.remove(id)));

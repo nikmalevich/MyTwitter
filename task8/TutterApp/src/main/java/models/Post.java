@@ -5,19 +5,19 @@ import java.util.List;
 import java.util.Objects;
 
 public class Post {
-    private long id;
+    private int id;
     private String description;
     private Date createdAt;
-    private String author;
+    private User author;
     private String photoLink;
-    private List<String> hashTags;
-    private List<String> likes;
+    private List<HashTag> hashTags;
+    private List<User> likes;
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -37,12 +37,8 @@ public class Post {
         this.createdAt = createdAt;
     }
 
-    public String getAuthor() {
+    public User getAuthor() {
         return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
     }
 
     public String getPhotoLink() {
@@ -53,19 +49,23 @@ public class Post {
         this.photoLink = photoLink;
     }
 
-    public List<String> getHashTags() {
+    public void setAuthor(User author) {
+        this.author = author;
+    }
+
+    public List<HashTag> getHashTags() {
         return hashTags;
     }
 
-    public void setHashTags(List<String> hashTags) {
+    public void setHashTags(List<HashTag> hashTags) {
         this.hashTags = hashTags;
     }
 
-    public List<String> getLikes() {
+    public List<User> getLikes() {
         return likes;
     }
 
-    public void setLikes(List<String> likes) {
+    public void setLikes(List<User> likes) {
         this.likes = likes;
     }
 

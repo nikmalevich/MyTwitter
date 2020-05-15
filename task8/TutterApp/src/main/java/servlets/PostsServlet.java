@@ -10,7 +10,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
@@ -24,7 +23,7 @@ public class PostsServlet extends HttpServlet {
 
     static {
         try {
-            LogManager.getLogManager().readConfiguration(new FileInputStream("D:\\GitHub\\MyTwitter\\task8\\TutterApp\\src\\main\\resources\\log.config"));
+            LogManager.getLogManager().readConfiguration(PostsServlet.class.getClassLoader().getResourceAsStream("logging.properties"));
 
             logger = Logger.getLogger(PostsServlet.class.getName());
         } catch (Exception ignored) {
