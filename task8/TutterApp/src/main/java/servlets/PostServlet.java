@@ -1,7 +1,7 @@
 package servlets;
 
 import dao.PostDAO;
-import dao.PostDAOImpl;
+import dao.impl.PostDAOImpl;
 import forms.EditPostForm;
 import forms.NewPostForm;
 import models.Constants;
@@ -24,7 +24,7 @@ public class PostServlet extends HttpServlet {
 
     static {
         try {
-            LogManager.getLogManager().readConfiguration(PostServlet.class.getClassLoader().getResourceAsStream("logging.properties"));
+            LogManager.getLogManager().readConfiguration(PostServlet.class.getClassLoader().getResourceAsStream(Constants.LOGGING_PROPERTIES));
 
             logger = Logger.getLogger(PostServlet.class.getName());
         } catch (Exception ignored) {
@@ -39,7 +39,7 @@ public class PostServlet extends HttpServlet {
 
         if (post.isPresent()) {
             try {
-                resp.getWriter().write(Constants.objectMapper.writeValueAsString(post.get()));
+                resp.getWriter().write(Constants.OBJECT_MAPPER.writeValueAsString(post.get()));
             } catch (IOException e) {
                 logger.log(Level.SEVERE, e.getMessage());
             }
@@ -51,7 +51,7 @@ public class PostServlet extends HttpServlet {
         try {
             String json = req.getReader().lines().reduce("", (accumulator, actual) -> accumulator + actual);
 
-            NewPostForm form = Constants.objectMapper.readValue(json, NewPostForm.class);
+            NewPostForm form = Constants.OBJECT_MAPPER.readValue(json, NewPostForm.class);
 
             resp.getWriter().write(Boolean.toString(postDAO.add(form)));
         } catch (IOException e) {
@@ -64,7 +64,7 @@ public class PostServlet extends HttpServlet {
         try {
             String json = req.getReader().lines().reduce("", (accumulator, actual) -> accumulator + actual);
 
-            EditPostForm form = Constants.objectMapper.readValue(json, EditPostForm.class);
+            EditPostForm form = Constants.OBJECT_MAPPER.readValue(json, EditPostForm.class);
 
             resp.getWriter().write(Boolean.toString(postDAO.edit(form)));
         } catch (IOException e) {

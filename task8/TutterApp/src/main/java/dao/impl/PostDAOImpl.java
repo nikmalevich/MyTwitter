@@ -1,12 +1,13 @@
-package dao;
+package dao.impl;
 
+import dao.*;
 import forms.EditPostForm;
 import forms.FilterForm;
 import forms.NewPostForm;
+import models.Constants;
 import models.Post;
 
 import javax.naming.NamingException;
-import java.io.FileInputStream;
 import java.sql.*;
 import java.util.Date;
 import java.util.*;
@@ -16,14 +17,13 @@ import java.util.logging.Logger;
 
 public class PostDAOImpl implements PostDAO {
     private static Logger logger;
-    private static ConnectionPool connectionPool;
     private static UserDAO userDAO;
     private static HashTagDAO hashTagDAO;
     private static LikeDAO likeDAO;
 
     static {
         try {
-            LogManager.getLogManager().readConfiguration(new FileInputStream("D:\\GitHub\\MyTwitter\\task8\\TutterApp\\src\\main\\webapp\\resources\\logging.properties"));
+            LogManager.getLogManager().readConfiguration(PostDAOImpl.class.getClassLoader().getResourceAsStream(Constants.LOGGING_PROPERTIES));
 
             logger = Logger.getLogger(PostDAOImpl.class.getName());
         } catch (Exception ignored) {
@@ -31,7 +31,6 @@ public class PostDAOImpl implements PostDAO {
     }
 
     public PostDAOImpl() {
-        connectionPool = ConnectionPool.getInstance();
         userDAO = new UserDAOImpl();
         hashTagDAO = new HashTagDAOImpl();
         likeDAO = new LikeDAOImpl();
@@ -39,8 +38,8 @@ public class PostDAOImpl implements PostDAO {
 
     @Override
     public Optional<Post> get(int id) {
-        try (Connection connection = connectionPool.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement("select * from post where post_id=?");
+        try (Connection connection = ConnectionPool.getInstance().getConnection();
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM post WHERE post_id=?")) {
             statement.setInt(1, id);
             ResultSet resultSet = statement.executeQuery();
 
@@ -48,9 +47,9 @@ public class PostDAOImpl implements PostDAO {
                 Post post = new Post();
 
                 post.setId(id);
-                post.setDescription(resultSet.getString("description"));
+                post.setDescription(resultSet.getString(Constants.DESCRIPTION));
                 post.setCreatedAt(new Date(resultSet.getTimestamp("created_at").getTime()));
-                userDAO.get(resultSet.getInt("user_id")).ifPresent(post::setAuthor);
+                userDAO.get(resultSet.getInt(Constants.USER_ID)).ifPresent(post::setAuthor);
                 post.setPhotoLink(resultSet.getString("photo_link"));
                 post.setHashTags(hashTagDAO.getByPostID(id));
                 post.setLikes(likeDAO.getByPostID(id));
@@ -65,22 +64,22 @@ public class PostDAOImpl implements PostDAO {
     }
 
     @Override
-    public List<Integer> getIDsByDate(Date fromDate, Date toDate) {
-        try (Connection connection = connectionPool.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement
-                    ("select post_id from post where created_at>? and created_at<?");
-            statement.setTimestamp(1, new Timestamp(fromDate.getTime()));
+    public List<Integer> getIDsByDate(Date FROMDate, Date toDate) {
+        try (Connection connection = ConnectionPool.getInstance().getConnection();
+             PreparedStatement statement = connection.prepareStatement
+                     ("SELECT post_id FROM post WHERE created_at>? AND created_at<?")) {
+            statement.setTimestamp(1, new Timestamp(FROMDate.getTime()));
             statement.setTimestamp(2, new Timestamp(toDate.getTime()));
 
             ResultSet resultSet = statement.executeQuery();
 
-            List<Integer> IDs = new ArrayList<>();
+            List<Integer> ids = new ArrayList<>();
 
             while (resultSet.next()) {
-                IDs.add(resultSet.getInt("post_id"));
+                ids.add(resultSet.getInt(Constants.POST_ID));
             }
 
-            return IDs;
+            return ids;
         } catch (SQLException | NamingException e) {
             logger.log(Level.SEVERE, e.getMessage());
 
@@ -89,21 +88,21 @@ public class PostDAOImpl implements PostDAO {
     }
 
     @Override
-    public List<Integer> getIDsByUsersDate(List<Integer> usersID, Date fromDate, Date toDate) {
+    public List<Integer> getIDsByUsersDate(List<Integer> usersID, Date FROMDate, Date toDate) {
         List<Integer> postsID = new ArrayList<>();
 
         for (int userID : usersID) {
-            try (Connection connection = connectionPool.getConnection()) {
-                PreparedStatement statement = connection.prepareStatement
-                        ("select post_id from post where user_id=? and created_at>? and created_at<?");
+            try (Connection connection = ConnectionPool.getInstance().getConnection();
+                 PreparedStatement statement = connection.prepareStatement
+                         ("SELECT post_id FROM post WHERE user_id=? AND created_at>? AND created_at<?")) {
                 statement.setInt(1, userID);
-                statement.setTimestamp(2, new Timestamp(fromDate.getTime()));
+                statement.setTimestamp(2, new Timestamp(FROMDate.getTime()));
                 statement.setTimestamp(3, new Timestamp(toDate.getTime()));
 
                 ResultSet resultSet = statement.executeQuery();
 
                 while (resultSet.next()) {
-                    postsID.add(resultSet.getInt("post_id"));
+                    postsID.add(resultSet.getInt(Constants.POST_ID));
                 }
             } catch(SQLException | NamingException e){
                 logger.log(Level.SEVERE, e.getMessage());
@@ -119,15 +118,14 @@ public class PostDAOImpl implements PostDAO {
     public List<Integer> getIDsByHashTag(Integer hashTagID) {
         List<Integer> postsID = new ArrayList<>();
 
-        try (Connection connection = connectionPool.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement
-                    ("select post_id from post_tag where tag_id=?");
+        try (Connection connection = ConnectionPool.getInstance().getConnection();
+             PreparedStatement statement = connection.prepareStatement("SELECT post_id FROM post_tag WHERE tag_id=?")) {
             statement.setInt(1, hashTagID);
 
             ResultSet resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
-                postsID.add(resultSet.getInt("post_id"));
+                postsID.add(resultSet.getInt(Constants.POST_ID));
             }
         } catch(SQLException | NamingException e){
             logger.log(Level.SEVERE, e.getMessage());
@@ -197,10 +195,10 @@ public class PostDAOImpl implements PostDAO {
         Connection connection = null;
 
         try {
-            connection = connectionPool.getConnection();
+            connection = ConnectionPool.getInstance().getConnection();
             connection.setAutoCommit(false);
 
-            PreparedStatement statement = connection.prepareStatement("select max(post_id) from post");
+            PreparedStatement statement = connection.prepareStatement("SELECT max(post_id) FROM post");
             ResultSet resultSet = statement.executeQuery();
 
             int postID = 0;
@@ -210,7 +208,7 @@ public class PostDAOImpl implements PostDAO {
             }
 
             statement = connection.prepareStatement
-                    ("insert into post(user_id, description, created_at, photo_link) value (?, ?, ?, ?)");
+                    ("INSERT INTO post(user_id, description, created_at, photo_link) VALUE (?, ?, ?, ?)");
             statement.setInt(1, form.getAuthor().getId());
             statement.setString(2, form.getDescription());
             statement.setTimestamp(3, new Timestamp(new Date().getTime()));
@@ -224,29 +222,29 @@ public class PostDAOImpl implements PostDAO {
             statement.execute();
 
             for (String descriptionHashTag : form.getDescriptionHashTags()) {
-                statement = connection.prepareStatement("select tag_id from tag where description=?");
+                statement = connection.prepareStatement("SELECT tag_id FROM tag WHERE description=?");
                 statement.setString(1, descriptionHashTag);
                 resultSet = statement.executeQuery();
 
                 int tagID = 0;
 
                 if (!resultSet.next()) {
-                    statement = connection.prepareStatement("select max(tag_id) from tag");
+                    statement = connection.prepareStatement("SELECT max(tag_id) FROM tag");
                     resultSet = statement.executeQuery();
 
                     if (resultSet.next()) {
                         tagID = resultSet.getInt(1) + 1;
                     }
 
-                    statement = connection.prepareStatement("insert into tag(description) value(?)");
+                    statement = connection.prepareStatement("INSERT INTO tag(description) VALUE(?)");
                     statement.setString(1, descriptionHashTag);
 
                     statement.execute();
                 } else {
-                    tagID = resultSet.getInt("tag_id");
+                    tagID = resultSet.getInt(Constants.TAG_ID);
                 }
 
-                statement = connection.prepareStatement("insert into post_tag(post_id, tag_id) value(?, ?)");
+                statement = connection.prepareStatement("INSERT INTO post_tag(post_id, tag_id) VALUE(?, ?)");
                 statement.setInt(1, postID);
                 statement.setInt(2, tagID);
 
@@ -285,11 +283,11 @@ public class PostDAOImpl implements PostDAO {
         Connection connection = null;
 
         try {
-            connection = connectionPool.getConnection();
+            connection = ConnectionPool.getInstance().getConnection();
             connection.setAutoCommit(false);
 
             PreparedStatement statement = connection.prepareStatement
-                    ("update post set description=?, photo_link=? where post_id=?");
+                    ("UPDATE post SET description=?, photo_link=? WHERE post_id=?");
             statement.setString(1, form.getDescription());
 
             if (form.getPhotoLink() != null) {
@@ -302,35 +300,35 @@ public class PostDAOImpl implements PostDAO {
 
             statement.execute();
 
-            statement = connection.prepareStatement("delete from post_tag where post_id=?");
+            statement = connection.prepareStatement("DELETE FROM post_tag WHERE post_id=?");
             statement.setInt(1, form.getId());
 
             statement.execute();
 
             for (String descriptionHashTag : form.getDescriptionHashTags()) {
-                statement = connection.prepareStatement("select tag_id from tag where description=?");
+                statement = connection.prepareStatement("SELECT tag_id FROM tag WHERE description=?");
                 statement.setString(1, descriptionHashTag);
                 ResultSet resultSet = statement.executeQuery();
 
                 int tagID = 0;
 
                 if (!resultSet.next()) {
-                    statement = connection.prepareStatement("select max(tag_id) from tag");
+                    statement = connection.prepareStatement("SELECT max(tag_id) FROM tag");
                     resultSet = statement.executeQuery();
 
                     if (resultSet.next()) {
                         tagID = resultSet.getInt(1) + 1;
                     }
 
-                    statement = connection.prepareStatement("insert into tag(description) value(?)");
+                    statement = connection.prepareStatement("INSERT INTO tag(description) VALUE(?)");
                     statement.setString(1, descriptionHashTag);
 
                     statement.execute();
                 } else {
-                    tagID = resultSet.getInt("tag_id");
+                    tagID = resultSet.getInt(Constants.TAG_ID);
                 }
 
-                statement = connection.prepareStatement("insert into post_tag(post_id, tag_id) value(?, ?)");
+                statement = connection.prepareStatement("INSERT INTO post_tag(post_id, tag_id) VALUE(?, ?)");
                 statement.setInt(1, form.getId());
                 statement.setInt(2, tagID);
 
@@ -366,8 +364,8 @@ public class PostDAOImpl implements PostDAO {
 
     @Override
     public boolean remove(int id) {
-        try (Connection connection = connectionPool.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement("delete from post where post_id=?");
+        try (Connection connection = ConnectionPool.getInstance().getConnection();
+             PreparedStatement statement = connection.prepareStatement("DELETE FROM post WHERE post_id=?")) {
             statement.setInt(1, id);
 
             statement.execute();
@@ -382,9 +380,9 @@ public class PostDAOImpl implements PostDAO {
 
     @Override
     public boolean like(int postID, int userID) {
-        try (Connection connection = connectionPool.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement
-                    ("insert into post_like(post_id, user_id) value(?, ?)");
+        try (Connection connection = ConnectionPool.getInstance().getConnection();
+             PreparedStatement statement = connection.prepareStatement
+                     ("INSERT INTO post_like(post_id, user_id) VALUE(?, ?)")) {
             statement.setInt(1, postID);
             statement.setInt(2, userID);
 
@@ -400,9 +398,9 @@ public class PostDAOImpl implements PostDAO {
 
     @Override
     public boolean dislike(int postID, int userID) {
-        try (Connection connection = connectionPool.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement
-                    ("delete from post_like where post_id=? and user_id=?");
+        try (Connection connection = ConnectionPool.getInstance().getConnection();
+             PreparedStatement statement = connection.prepareStatement
+                     ("DELETE FROM post_like WHERE post_id=? AND user_id=?")) {
             statement.setInt(1, postID);
             statement.setInt(2, userID);
 

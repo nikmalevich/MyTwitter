@@ -1,5 +1,8 @@
-package dao;
+package dao.impl;
 
+import dao.ConnectionPool;
+import dao.UserDAO;
+import models.Constants;
 import models.User;
 
 import javax.naming.NamingException;
@@ -16,25 +19,20 @@ import java.util.logging.Logger;
 
 public class UserDAOImpl implements UserDAO {
     private static Logger logger;
-    private static ConnectionPool connectionPool;
 
     static {
         try {
-            LogManager.getLogManager().readConfiguration(UserDAOImpl.class.getClassLoader().getResourceAsStream("logging.properties"));
+            LogManager.getLogManager().readConfiguration(UserDAOImpl.class.getClassLoader().getResourceAsStream(Constants.LOGGING_PROPERTIES));
 
             logger = Logger.getLogger(UserDAOImpl.class.getName());
         } catch (Exception ignored) {
         }
     }
 
-    public UserDAOImpl() {
-        connectionPool = ConnectionPool.getInstance();
-    }
-
     @Override
     public Optional<User> get(int id) {
-        try (Connection connection = connectionPool.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement("select name from user where user_id=?");
+        try (Connection connection = ConnectionPool.getInstance().getConnection();
+             PreparedStatement statement = connection.prepareStatement("SELECT name FROM user WHERE user_id=?")) {
             statement.setInt(1, id);
             ResultSet resultSet = statement.executeQuery();
 
@@ -55,8 +53,8 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public boolean add(String name) {
-        try (Connection connection = connectionPool.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement("insert into user(name) value (?)");
+        try (Connection connection = ConnectionPool.getInstance().getConnection();
+             PreparedStatement statement = connection.prepareStatement("INSERT INTO user(name) VALUE (?)")) {
             statement.setString(1, name);
 
             statement.execute();
@@ -71,19 +69,19 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public List<Integer> getIDs(String name) {
-        try (Connection connection = connectionPool.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement("select user_id from user where name=?");
+        try (Connection connection = ConnectionPool.getInstance().getConnection();
+             PreparedStatement statement = connection.prepareStatement("SELECT user_id FROM user WHERE name=?")) {
             statement.setString(1, name);
 
             ResultSet resultSet = statement.executeQuery();
 
-            List<Integer> IDs = new ArrayList<>();
+            List<Integer> ids = new ArrayList<>();
 
             while (resultSet.next()) {
-                IDs.add(resultSet.getInt("user_id"));
+                ids.add(resultSet.getInt(Constants.USER_ID));
             }
 
-            return IDs;
+            return ids;
         } catch (SQLException | NamingException e) {
             logger.log(Level.SEVERE, e.getMessage());
 

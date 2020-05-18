@@ -1,5 +1,9 @@
-package dao;
+package dao.impl;
 
+import dao.ConnectionPool;
+import dao.LikeDAO;
+import dao.UserDAO;
+import models.Constants;
 import models.User;
 
 import javax.naming.NamingException;
@@ -15,12 +19,11 @@ import java.util.logging.Logger;
 
 public class LikeDAOImpl implements LikeDAO {
     private static Logger logger;
-    private static ConnectionPool connectionPool;
     private static UserDAO userDAO;
 
     static {
         try {
-            LogManager.getLogManager().readConfiguration(LikeDAOImpl.class.getClassLoader().getResourceAsStream("logging.properties"));
+            LogManager.getLogManager().readConfiguration(LikeDAOImpl.class.getClassLoader().getResourceAsStream(Constants.LOGGING_PROPERTIES));
 
             logger = Logger.getLogger(LikeDAOImpl.class.getName());
         } catch (Exception ignored) {
@@ -28,21 +31,20 @@ public class LikeDAOImpl implements LikeDAO {
     }
 
     public LikeDAOImpl() {
-        connectionPool = ConnectionPool.getInstance();
         userDAO = new UserDAOImpl();
     }
 
     @Override
     public List<User> getByPostID(int postID) {
-        try (Connection connection = connectionPool.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement("select user_id from post_like where post_id=?");
+        try (Connection connection = ConnectionPool.getInstance().getConnection();
+             PreparedStatement statement = connection.prepareStatement("SELECT user_id FROM post_like WHERE post_id=?")) {
             statement.setInt(1, postID);
             ResultSet resultSet = statement.executeQuery();
 
             List<User> likeUsers = new ArrayList<>();
 
             if (resultSet.next()) {
-                userDAO.get(resultSet.getInt("user_id")).ifPresent(likeUsers::add);
+                userDAO.get(resultSet.getInt(Constants.USER_ID)).ifPresent(likeUsers::add);
             }
 
             return likeUsers;

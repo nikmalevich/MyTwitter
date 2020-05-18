@@ -1,1 +1,1 @@
-SELECT distinct * FROM user
+select * from post where user_id=1 and description="hello"
