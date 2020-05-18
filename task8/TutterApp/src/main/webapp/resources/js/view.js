@@ -53,25 +53,30 @@ class View {
     }
 
     _setPostView(postView = {}, post = {}) {
-        if (Controller._curUser !== post.author) {
+        if (Controller._curUser.id !== post.author.id) {
             const children = postView.querySelector('div.post-action').children;
 
             children[0].setAttribute('style', 'display: none');
             children[1].setAttribute('style', 'display: none');
 
-            if (Controller._curUser === '') {
+            if (Controller._curUser.id === 0) {
                 children[2].setAttribute('style', 'display: none');
             }
         }
 
-        if (post.likes.find(like => like === Controller._curUser) === undefined) {
+        if (post.likes.find(user => user.id === Controller._curUser.id) === undefined) {
             postView.querySelector('div.post-action').lastElementChild.className = 'far fa-heart like';
         }
 
+        let strHashTags = '#';
+
+        post.hashTags.forEach(hashTag => strHashTags += hashTag.description.concat(' #'));
+        strHashTags = strHashTags.substr(0, strHashTags.length - 2);
+
         postView.firstElementChild.id = post.id;
         postView.querySelector('p.post-text').textContent = post.description;
-        postView.querySelector('p.post-tags').textContent = '#' + post.hashTags.join(' #');
-        postView.querySelector('p.post-info').textContent = post.createdAt.toLocaleString() + ' ' + post.author;
+        postView.querySelector('p.post-tags').textContent = strHashTags;
+        postView.querySelector('p.post-info').textContent = post.createdAt.toLocaleString() + ' ' + post.author.name;
 
         let image = postView.querySelector('img.post-image');
 

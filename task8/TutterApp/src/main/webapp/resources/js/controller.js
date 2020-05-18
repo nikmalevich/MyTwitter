@@ -2,9 +2,9 @@ class Controller {
     static _view;
     static _model;
     static _curUser;
-    static _curNumVisiblePosts;
     static _curFilter;
     static _curPost;
+    static _curPostID;
     static _users;
 
     constructor() {
@@ -20,23 +20,26 @@ class Controller {
         Controller._view._donePostButton.addEventListener('click', Controller.donePost);
         Controller._view._logInButton.addEventListener('click', Controller.logIn);
 
-        Controller._curUser = document.getElementById('username').textContent;
-        Controller._curNumVisiblePosts = 10;
+        Controller._curUser = {};
+        Controller._curUser.id = 0;
         Controller._curFilter = {};
+        Controller._curFilter.fromDate = new Date('1995-12-17T03:24:00');
+        Controller._curFilter.toDate = new Date(Date.now());
+        Controller._curFilter.quantity = 10;
         Controller._curPost = null;
         Controller._users = new Map();
         Controller._users.set('nikmalevich', '1111');
         Controller._users.set('anna', '2222');
 
-        Controller.getPage(0, Controller._curNumVisiblePosts);
+        Controller.getPage(Controller._curFilter);
     }
 
-    static getPage(skip = 0, top = 10, filters = {}) {
+    static getPage(filters = {}) {
         Controller._view.clearView();
 
-        Controller._model.getPage(skip, top, filters).forEach(post => Controller._view.displayPost(post));
+        Controller._model.getPage(filters).forEach(post => Controller._view.displayPost(post));
 
-        if (Controller._model._curNumFilterPosts <= Controller._curNumVisiblePosts) {
+        if (Controller._model._curNumFilterPosts <= Controller._curFilter.quantity) {
             Controller._view._seeMoreButton.setAttribute('style', 'display: none');
         } else {
             Controller._view._seeMoreButton.setAttribute('style', 'display: block');
@@ -54,22 +57,22 @@ class Controller {
         Controller._view._userLogin.value = '';
         Controller._view._userPassword.value = '';
 
-        Controller.getPage(0, Controller._curNumVisiblePosts, Controller._curFilter);
+        Controller.getPage(Controller._curFilter);
     }
 
     static logInOut() {
-        if (Controller._curUser === '') {
+        if (Controller._curUser.id === 0) {
             Controller._view._mainPage.setAttribute('style', 'display: none');
             Controller._view._postPage.setAttribute('style', 'display: none');
             Controller._view._logInPage.setAttribute('style', 'display: block');
         } else {
-            Controller._curUser = '';
+            Controller._curUser.id = 0;
             Controller._view._logInOutButton.textContent = 'Log in';
             Controller._view._currentUser.textContent = '';
             Controller._view._addPostButton.setAttribute('style', 'display: none');
             Controller._view._addPostButton.disabled = true;
 
-            Controller.getPage(0, Controller._curNumVisiblePosts, Controller._curFilter);
+            Controller.getPage(Controller._curFilter);
         }
     }
 
@@ -88,21 +91,22 @@ class Controller {
         }
 
         if (hashTags !== '') {
-            Controller._curFilter.hashTags = hashTags.split(' ');
+            Controller._curFilter.descriptionHashTags = hashTags.split(' ');
         }
 
-        Controller._curFilter.createdFromTo = [new Date(dateFrom), new Date(dateTo)];
+        Controller._curFilter.fromDate = new Date(dateFrom);
+        Controller._curFilter.toDate = new Date(dateTo);
 
-        Controller.getPage(0, 10, Controller._curFilter);
+        Controller.getPage(Controller._curFilter);
     }
 
     static postAction(event) {
-        let id = event.target.parentElement.parentElement.id;
+        Controller._curPostID = event.target.parentElement.parentElement.id;
 
         switch (event.target.className) {
             case 'fas fa-times delete':
-                if (Controller._model.remove(id)) {
-                    Controller._view.removePost(id);
+                if (Controller._model.remove(Controller._curPostID)) {
+                    Controller._view.removePost(Controller._curPostID);
                 }
 
                 break;
@@ -110,29 +114,34 @@ class Controller {
                 Controller._view._mainPage.setAttribute('style', 'display: none');
                 Controller._view._postPage.setAttribute('style', 'display: block');
 
-                Controller._curPost = Controller._model.get(id);
+                Controller._curPost = Controller._model.get(Controller._curPostID);
+
+                let strHashTags = '#';
+
+                Controller._curPost.hashTags.forEach(hashTag => strHashTags += hashTag.description.concat(' #'));
+                strHashTags = strHashTags.substr(0, strHashTags.length - 2);
 
                 Controller._view._postText.value = Controller._curPost.description;
-                Controller._view._postTags.value = Controller._curPost.hashTags.join(' ');
+                Controller._view._postTags.value = strHashTags;
 
                 break;
             case 'fas fa-heart like':
-                Controller._model.dislike(id, Controller._curUser);
-                Controller._view.dislikePost(id);
+                Controller._model.dislike(Controller._curPostID, Controller._curUser);
+                Controller._view.dislikePost(Controller._curPostID);
 
                 break;
             case 'far fa-heart like':
-                Controller._model.like(id, Controller._curUser);
-                Controller._view.likePost(id);
+                Controller._model.like(Controller._curPostID, Controller._curUser);
+                Controller._view.likePost(Controller._curPostID);
 
                 break;
         }
     }
 
     static seeMore() {
-        Controller._curNumVisiblePosts += 10;
+        Controller._curFilter.quantity += 10;
 
-        Controller.getPage(0, Controller._curNumVisiblePosts, Controller._curFilter);
+        Controller.getPage(Controller._curFilter);
     }
 
     static addPost(event) {
@@ -158,18 +167,17 @@ class Controller {
 
         let post = {
             description: description,
-            hashTags: hashTags
+            descriptionHashTags: hashTags
         };
 
         if (Controller._curPost === null) {
-            post.id = Math.random().toString(36).substr(2, 9);
-            post.createdAt = new Date(Date.now());
             post.author = Controller._curUser;
-            post.likes = [];
 
             Controller._model.add(post);
         } else {
-            Controller._model.edit(Controller._curPost.id, post);
+            post.id = Controller._curPostID;
+
+            Controller._model.edit(post);
         }
 
         Controller._view._postText.value = '';
@@ -178,7 +186,7 @@ class Controller {
         Controller._view._postPage.setAttribute('style', 'display: none');
         Controller._view._mainPage.setAttribute('style', 'display: block');
 
-        Controller.getPage(0, Controller._curNumVisiblePosts, Controller._curFilter);
+        Controller.getPage(Controller._curFilter);
     }
 
     static logIn() {
