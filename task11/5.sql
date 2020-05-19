@@ -1,0 +1,1 @@
+SELECT * FROM user where (SELECT count(*) FROM post where USER_ID=user.USER_ID)>3

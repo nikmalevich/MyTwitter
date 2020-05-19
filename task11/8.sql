@@ -1,0 +1,1 @@
+SELECT NAME FROM user where (SELECT count(*) FROM post where USER_ID=user.USER_ID and datediff(now(), CREATED_AT)=0)>3
