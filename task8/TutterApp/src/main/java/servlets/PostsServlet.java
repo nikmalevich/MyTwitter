@@ -1,7 +1,7 @@
 package servlets;
 
 import dao.PostDAO;
-import dao.PostDAOImpl;
+import dao.impl.PostDAOImpl;
 import forms.FilterForm;
 import models.Constants;
 import models.Post;
@@ -10,7 +10,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
@@ -24,7 +23,7 @@ public class PostsServlet extends HttpServlet {
 
     static {
         try {
-            LogManager.getLogManager().readConfiguration(new FileInputStream("D:\\GitHub\\MyTwitter\\task8\\TutterApp\\src\\main\\resources\\log.config"));
+            LogManager.getLogManager().readConfiguration(PostsServlet.class.getClassLoader().getResourceAsStream(Constants.LOGGING_PROPERTIES));
 
             logger = Logger.getLogger(PostsServlet.class.getName());
         } catch (Exception ignored) {
@@ -36,9 +35,9 @@ public class PostsServlet extends HttpServlet {
         try {
             String json = req.getReader().lines().reduce("", (accumulator, actual) -> accumulator + actual);
 
-            List<Post> page = postDAO.getPage(Constants.objectMapper.readValue(json, FilterForm.class));
+            List<Post> page = postDAO.getPage(Constants.OBJECT_MAPPER.readValue(json, FilterForm.class));
 
-            resp.getWriter().write(Constants.objectMapper.writeValueAsString(page));
+            resp.getWriter().write(Constants.OBJECT_MAPPER.writeValueAsString(page));
         } catch (IOException e) {
             logger.log(Level.SEVERE, e.getMessage());
         }

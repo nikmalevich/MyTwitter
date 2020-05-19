@@ -6,10 +6,9 @@ import java.util.Objects;
 
 public class FilterForm {
     private String author;
-    private List<String> hashTags;
+    private List<String> descriptionHashTags;
     private Date fromDate;
     private Date toDate;
-    private int skip;
     private int quantity;
 
     public String getAuthor() {
@@ -20,12 +19,12 @@ public class FilterForm {
         this.author = author;
     }
 
-    public List<String> getHashTags() {
-        return hashTags;
+    public List<String> getDescriptionHashTags() {
+        return descriptionHashTags;
     }
 
-    public void setHashTags(List<String> hashTags) {
-        this.hashTags = hashTags;
+    public void setDescriptionHashTags(List<String> descriptionHashTags) {
+        this.descriptionHashTags = descriptionHashTags;
     }
 
     public Date getFromDate() {
@@ -44,14 +43,6 @@ public class FilterForm {
         this.toDate = toDate;
     }
 
-    public int getSkip() {
-        return skip;
-    }
-
-    public void setSkip(int skip) {
-        this.skip = skip;
-    }
-
     public int getQuantity() {
         return quantity;
     }
@@ -65,16 +56,15 @@ public class FilterForm {
         if (this == o) return true;
         if (!(o instanceof FilterForm)) return false;
         FilterForm that = (FilterForm) o;
-        return skip == that.skip &&
-                quantity == that.quantity &&
-                Objects.equals(author, that.author) &&
-                Objects.equals(hashTags, that.hashTags) &&
-                Objects.equals(fromDate, that.fromDate) &&
-                Objects.equals(toDate, that.toDate);
+        return quantity == that.quantity &&
+                author.equals(that.author) &&
+                descriptionHashTags.equals(that.descriptionHashTags) &&
+                fromDate.equals(that.fromDate) &&
+                toDate.equals(that.toDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(author, hashTags, fromDate, toDate, skip, quantity);
+        return Objects.hash(author, descriptionHashTags, fromDate, toDate, quantity);
     }
 }
