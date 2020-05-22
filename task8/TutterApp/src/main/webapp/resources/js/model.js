@@ -1,6 +1,4 @@
 class Model {
-    _curNumFilterPosts;
-
     async getPage(filterConfig = {}) {
         let response = await fetch('/posts', {
             method: 'POST',
@@ -10,10 +8,13 @@ class Model {
             }
         });
 
-        let result = response.json();
-        this._curNumFilterPosts = result.length;
+        return response.json();
+    }
 
-        return result;
+    async countPosts() {
+        let response = await fetch('/posts');
+
+        return response.json();
     }
 
     async get(id = 0) {
@@ -54,21 +55,21 @@ class Model {
         return response.json();
     }
 
-    like(id = '', user = '') {
-        let post = this.get(id);
+    async like(postID = 0, userID = 0) {
+        let response = await fetch(`/like?postID=${postID}&userID=${userID}`);
 
-        post.likes.push(user);
-
-        localStorage.removeItem(id);
-        localStorage.setItem(id, JSON.stringify(post));
+        return response.json();
     }
 
-    dislike(id = '', user = '') {
-        let post = this.get(id);
+    async dislike(postID = 0, userID = 0) {
+        let response = await fetch(`/dislike?postID=${postID}&userID=${userID}`);
 
-        post.likes = post.likes.filter(like => like !== user);
+        return response.json();
+    }
 
-        localStorage.removeItem(id);
-        localStorage.setItem(id, JSON.stringify(post));
+    async getUserID(name = '') {
+        let response = await fetch(`/user?name=${name}`);
+
+        return response.json();
     }
 }

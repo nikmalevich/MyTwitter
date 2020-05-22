@@ -60,7 +60,7 @@ public class HashTagDAOImpl implements HashTagDAO {
 
             List<HashTag> hashTags = new ArrayList<>();
 
-            if (resultSet.next()) {
+            while (resultSet.next()) {
                 get(resultSet.getInt(Constants.TAG_ID)).ifPresent(hashTags::add);
             }
 
@@ -97,7 +97,15 @@ public class HashTagDAOImpl implements HashTagDAO {
         List<Integer> ids = new ArrayList<>();
 
         for (String description : descriptions) {
-            getByDescription(description).ifPresent(ids::add);
+            Optional<Integer> id = getByDescription(description);
+
+            if (id.isPresent()) {
+                ids.add(id.get());
+            } else {
+                ids.clear();
+
+                break;
+            }
         }
 
         return ids;

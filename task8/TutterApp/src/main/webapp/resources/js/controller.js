@@ -2,6 +2,7 @@ class Controller {
     static _view;
     static _model;
     static _curUser;
+    static _curNumFilterPosts;
     static _curFilter;
     static _curPost;
     static _curPostID;
@@ -23,8 +24,9 @@ class Controller {
         Controller._curUser = {};
         Controller._curUser.id = 0;
         Controller._curFilter = {};
+        Controller._curFilter.descriptionHashTags = [];
         Controller._curFilter.fromDate = new Date('1995-12-17T03:24:00');
-        Controller._curFilter.toDate = new Date(Date.now());
+        Controller._curFilter.toDate = new Date('2021-12-17T03:24:00');
         Controller._curFilter.quantity = 10;
         Controller._curPost = null;
         Controller._users = new Map();
@@ -34,22 +36,37 @@ class Controller {
         Controller.getPage(Controller._curFilter);
     }
 
-    static getPage(filters = {}) {
+    static async getPage(filters = {}) {
         Controller._view.clearView();
 
-        Controller._model.getPage(filters).forEach(post => Controller._view.displayPost(post));
+        try {
+            let posts = await Controller._model.getPage(filters);
+            Controller._curNumFilterPosts = await Controller._model.countPosts();
 
-        if (Controller._model._curNumFilterPosts <= Controller._curFilter.quantity) {
-            Controller._view._seeMoreButton.setAttribute('style', 'display: none');
-        } else {
-            Controller._view._seeMoreButton.setAttribute('style', 'display: block');
+            posts.forEach(post => Controller._view.displayPost(post));
+
+            if (Controller._curNumFilterPosts <= Controller._curFilter.quantity) {
+                Controller._view._seeMoreButton.setAttribute('style', 'display: none');
+            } else {
+                Controller._view._seeMoreButton.setAttribute('style', 'display: block');
+            }
+        } catch (e) {
+            Controller.errorPage()
         }
+    }
+
+    static errorPage() {
+        Controller._view._mainPage.setAttribute('style', 'display: none');
+        Controller._view._postPage.setAttribute('style', 'display: none');
+        Controller._view._logInPage.setAttribute('style', 'display: none');
+        Controller._view._errorPage.setAttribute('style', 'display: block');
     }
 
     static logo() {
         Controller._view._mainPage.setAttribute('style', 'display: block');
         Controller._view._postPage.setAttribute('style', 'display: none');
         Controller._view._logInPage.setAttribute('style', 'display: none');
+        Controller._view._errorPage.setAttribute('style', 'display: none');
         Controller._view._incorrectPostData.setAttribute('style', 'visibility: hidden');
         Controller._view._incorrectLogInData.setAttribute('style', 'visibility: hidden');
         Controller._view._postText.value = '';
@@ -64,6 +81,7 @@ class Controller {
         if (Controller._curUser.id === 0) {
             Controller._view._mainPage.setAttribute('style', 'display: none');
             Controller._view._postPage.setAttribute('style', 'display: none');
+            Controller._view._errorPage.setAttribute('style', 'display: none');
             Controller._view._logInPage.setAttribute('style', 'display: block');
         } else {
             Controller._curUser.id = 0;
@@ -84,13 +102,15 @@ class Controller {
         let dateFrom = formElements[2].value;
         let dateTo = formElements[3].value;
 
-        Controller._curFilter = {};
-
-        if (name !== '') {
+        if (name === '') {
+            Controller._curFilter.author = null;
+        } else {
             Controller._curFilter.author = name;
         }
 
-        if (hashTags !== '') {
+        if (hashTags === '') {
+            Controller._curFilter.descriptionHashTags = [];
+        } else {
             Controller._curFilter.descriptionHashTags = hashTags.split(' ');
         }
 
@@ -100,13 +120,19 @@ class Controller {
         Controller.getPage(Controller._curFilter);
     }
 
-    static postAction(event) {
+    static async postAction(event) {
         Controller._curPostID = event.target.parentElement.parentElement.id;
 
         switch (event.target.className) {
             case 'fas fa-times delete':
-                if (Controller._model.remove(Controller._curPostID)) {
-                    Controller._view.removePost(Controller._curPostID);
+                try {
+                    if (await Controller._model.remove(Controller._curPostID)) {
+                        Controller._view.removePost(Controller._curPostID);
+                    } else {
+                        Controller.errorPage()
+                    }
+                } catch (e) {
+                    Controller.errorPage()
                 }
 
                 break;
@@ -114,25 +140,43 @@ class Controller {
                 Controller._view._mainPage.setAttribute('style', 'display: none');
                 Controller._view._postPage.setAttribute('style', 'display: block');
 
-                Controller._curPost = Controller._model.get(Controller._curPostID);
+                try {
+                    Controller._curPost = await Controller._model.get(Controller._curPostID);
 
-                let strHashTags = '#';
+                    let strHashTags = '#';
 
-                Controller._curPost.hashTags.forEach(hashTag => strHashTags += hashTag.description.concat(' #'));
-                strHashTags = strHashTags.substr(0, strHashTags.length - 2);
+                    Controller._curPost.hashTags.forEach(hashTag => strHashTags += hashTag.description.concat(' #'));
+                    strHashTags = strHashTags.substr(0, strHashTags.length - 2);
 
-                Controller._view._postText.value = Controller._curPost.description;
-                Controller._view._postTags.value = strHashTags;
+                    Controller._view._postText.value = Controller._curPost.description;
+                    Controller._view._postTags.value = strHashTags;
+                } catch (e) {
+                    Controller.errorPage()
+                }
 
                 break;
             case 'fas fa-heart like':
-                Controller._model.dislike(Controller._curPostID, Controller._curUser);
-                Controller._view.dislikePost(Controller._curPostID);
+                try {
+                    if (await Controller._model.dislike(Controller._curPostID, Controller._curUser.id)) {
+                        Controller._view.dislikePost(Controller._curPostID);
+                    } else {
+                        Controller.errorPage()
+                    }
+                } catch (e) {
+                    Controller.errorPage()
+                }
 
                 break;
             case 'far fa-heart like':
-                Controller._model.like(Controller._curPostID, Controller._curUser);
-                Controller._view.likePost(Controller._curPostID);
+                try {
+                    if (await Controller._model.like(Controller._curPostID, Controller._curUser.id)) {
+                        Controller._view.likePost(Controller._curPostID);
+                    } else {
+                        Controller.errorPage();
+                    }
+                } catch (e) {
+                    Controller.errorPage()
+                }
 
                 break;
         }
@@ -153,7 +197,7 @@ class Controller {
         event.preventDefault();
     }
 
-    static donePost() {
+    static async donePost() {
         let description = Controller._view._postText.value;
         let hashTags = Controller._view._postTags.value.split(' ');
 
@@ -173,11 +217,23 @@ class Controller {
         if (Controller._curPost === null) {
             post.author = Controller._curUser;
 
-            Controller._model.add(post);
+            try {
+                if (!(await Controller._model.add(post))) {
+                    Controller.errorPage();
+                }
+            } catch (e) {
+                Controller.errorPage();
+            }
         } else {
             post.id = Controller._curPostID;
 
-            Controller._model.edit(post);
+            try {
+                if (!(await Controller._model.edit(post))) {
+                    Controller.errorPage();
+                }
+            } catch (e) {
+                Controller.errorPage();
+            }
         }
 
         Controller._view._postText.value = '';
@@ -189,7 +245,7 @@ class Controller {
         Controller.getPage(Controller._curFilter);
     }
 
-    static logIn() {
+    static async logIn() {
         let login = Controller._view._userLogin.value;
         let password = Controller._view._userPassword.value;
 
@@ -197,17 +253,22 @@ class Controller {
         Controller._view._userPassword.value = '';
 
         if (Controller._users.get(login) === password) {
-            Controller._curUser = login;
-            Controller._view._currentUser.textContent = login;
+            Controller._curUser.name = login;
+            try {
+                Controller._curUser.id = await Controller._model.getUserID(login);
+                Controller._view._currentUser.textContent = login;
 
-            Controller._view._incorrectLogInData.setAttribute('style', 'visibility: hidden');
-            Controller._view._logInPage.setAttribute('style', 'display: none');
-            Controller._view._mainPage.setAttribute('style', 'display: block');
-            Controller._view._logInOutButton.textContent = 'Log out';
-            Controller._view._addPostButton.setAttribute('style', 'display: block');
-            Controller._view._addPostButton.disabled = false;
+                Controller._view._incorrectLogInData.setAttribute('style', 'visibility: hidden');
+                Controller._view._logInPage.setAttribute('style', 'display: none');
+                Controller._view._mainPage.setAttribute('style', 'display: block');
+                Controller._view._logInOutButton.textContent = 'Log out';
+                Controller._view._addPostButton.setAttribute('style', 'display: block');
+                Controller._view._addPostButton.disabled = false;
 
-            Controller.getPage(0, Controller._curNumVisiblePosts, Controller._curFilter);
+                Controller.getPage(Controller._curFilter);
+            } catch (e) {
+                Controller.errorPage();
+            }
         } else {
             Controller._view._incorrectLogInData.setAttribute('style', 'visibility: visible');
         }

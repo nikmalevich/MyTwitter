@@ -47,9 +47,11 @@ class View {
         this._logInButton = document.getElementById('login');
         this._incorrectLogInData = document.getElementById('incorrectLogInData');
         this._currentUser = document.getElementById('username');
+        this._errorPage = document.getElementById('errorPage');
 
         this._postPage.setAttribute('style', 'display: none');
         this._logInPage.setAttribute('style', 'display: none');
+        this._errorPage.setAttribute('style', 'display: none');
     }
 
     _setPostView(postView = {}, post = {}) {
@@ -76,7 +78,7 @@ class View {
         postView.firstElementChild.id = post.id;
         postView.querySelector('p.post-text').textContent = post.description;
         postView.querySelector('p.post-tags').textContent = strHashTags;
-        postView.querySelector('p.post-info').textContent = post.createdAt.toLocaleString() + ' ' + post.author.name;
+        postView.querySelector('p.post-info').textContent = new Date(post.createdAt).toLocaleString() + ' ' + post.author.name;
 
         let image = postView.querySelector('img.post-image');
 

@@ -337,3 +337,16 @@ p.incorrect-data {
     font-size: 0.7em;
     visibility: hidden;
 }
+
+img.error {
+    margin-left: 30%;
+    margin-top: 5%;
+    font-size: 1em;
+    width: 40%;
+    height: 40%;
+}
+
+p.error {
+    margin-left: 5%;
+    font-size: 1em;
+}
