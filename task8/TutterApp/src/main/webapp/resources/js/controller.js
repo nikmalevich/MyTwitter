@@ -25,8 +25,8 @@ class Controller {
         Controller._curUser.id = 0;
         Controller._curFilter = {};
         Controller._curFilter.descriptionHashTags = [];
-        Controller._curFilter.fromDate = new Date('1995-12-17T03:24:00');
-        Controller._curFilter.toDate = new Date('2021-12-17T03:24:00');
+        Controller._curFilter.fromDate = new Date('2000-09-08T00:00:00');
+        Controller._curFilter.toDate = new Date(new Date().getDate() + 1);
         Controller._curFilter.quantity = 10;
         Controller._curPost = null;
         Controller._users = new Map();
@@ -51,7 +51,7 @@ class Controller {
                 Controller._view._seeMoreButton.setAttribute('style', 'display: block');
             }
         } catch (e) {
-            Controller.errorPage()
+            Controller.errorPage();
         }
     }
 
@@ -102,17 +102,8 @@ class Controller {
         let dateFrom = formElements[2].value;
         let dateTo = formElements[3].value;
 
-        if (name === '') {
-            Controller._curFilter.author = null;
-        } else {
-            Controller._curFilter.author = name;
-        }
-
-        if (hashTags === '') {
-            Controller._curFilter.descriptionHashTags = [];
-        } else {
-            Controller._curFilter.descriptionHashTags = hashTags.split(' ');
-        }
+        Controller._curFilter.author = name || null;
+        Controller._curFilter.descriptionHashTags = hashTags && hashTags.length ? hashTags.split(' ') : [];
 
         Controller._curFilter.fromDate = new Date(dateFrom);
         Controller._curFilter.toDate = new Date(dateTo);
@@ -129,10 +120,10 @@ class Controller {
                     if (await Controller._model.remove(Controller._curPostID)) {
                         Controller._view.removePost(Controller._curPostID);
                     } else {
-                        Controller.errorPage()
+                        Controller.errorPage();
                     }
                 } catch (e) {
-                    Controller.errorPage()
+                    Controller.errorPage();
                 }
 
                 break;
@@ -151,7 +142,7 @@ class Controller {
                     Controller._view._postText.value = Controller._curPost.description;
                     Controller._view._postTags.value = strHashTags;
                 } catch (e) {
-                    Controller.errorPage()
+                    Controller.errorPage();
                 }
 
                 break;
@@ -160,10 +151,10 @@ class Controller {
                     if (await Controller._model.dislike(Controller._curPostID, Controller._curUser.id)) {
                         Controller._view.dislikePost(Controller._curPostID);
                     } else {
-                        Controller.errorPage()
+                        Controller.errorPage();
                     }
                 } catch (e) {
-                    Controller.errorPage()
+                    Controller.errorPage();
                 }
 
                 break;
@@ -175,7 +166,7 @@ class Controller {
                         Controller.errorPage();
                     }
                 } catch (e) {
-                    Controller.errorPage()
+                    Controller.errorPage();
                 }
 
                 break;
