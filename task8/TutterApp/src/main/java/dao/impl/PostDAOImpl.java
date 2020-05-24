@@ -64,6 +64,22 @@ public class PostDAOImpl implements PostDAO {
     }
 
     @Override
+    public int countPosts() {
+        try (Connection connection = ConnectionPool.getInstance().getConnection();
+            PreparedStatement statement = connection.prepareStatement("SELECT count(*) FROM post")) {
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                return resultSet.getInt(1);
+            }
+        } catch (SQLException | NamingException e) {
+            logger.log(Level.SEVERE, e.getMessage());
+        }
+
+        return 0;
+    }
+
+    @Override
     public List<Integer> getIDsByDate(Date FROMDate, Date toDate) {
         try (Connection connection = ConnectionPool.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement
@@ -88,27 +104,25 @@ public class PostDAOImpl implements PostDAO {
     }
 
     @Override
-    public List<Integer> getIDsByUsersDate(List<Integer> usersID, Date FROMDate, Date toDate) {
+    public List<Integer> getIDsByUserDate(int userID, Date FROMDate, Date toDate) {
         List<Integer> postsID = new ArrayList<>();
 
-        for (int userID : usersID) {
-            try (Connection connection = ConnectionPool.getInstance().getConnection();
-                 PreparedStatement statement = connection.prepareStatement
-                         ("SELECT post_id FROM post WHERE user_id=? AND created_at>? AND created_at<?")) {
-                statement.setInt(1, userID);
-                statement.setTimestamp(2, new Timestamp(FROMDate.getTime()));
-                statement.setTimestamp(3, new Timestamp(toDate.getTime()));
+        try (Connection connection = ConnectionPool.getInstance().getConnection();
+             PreparedStatement statement = connection.prepareStatement
+                     ("SELECT post_id FROM post WHERE user_id=? AND created_at>? AND created_at<?")) {
+            statement.setInt(1, userID);
+            statement.setTimestamp(2, new Timestamp(FROMDate.getTime()));
+            statement.setTimestamp(3, new Timestamp(toDate.getTime()));
 
-                ResultSet resultSet = statement.executeQuery();
+            ResultSet resultSet = statement.executeQuery();
 
-                while (resultSet.next()) {
-                    postsID.add(resultSet.getInt(Constants.POST_ID));
-                }
-            } catch(SQLException | NamingException e){
-                logger.log(Level.SEVERE, e.getMessage());
-
-                return postsID;
+            while (resultSet.next()) {
+                postsID.add(resultSet.getInt(Constants.POST_ID));
             }
+        } catch(SQLException | NamingException e){
+            logger.log(Level.SEVERE, e.getMessage());
+
+            return postsID;
         }
 
         return postsID;
@@ -143,7 +157,11 @@ public class PostDAOImpl implements PostDAO {
         for (int hashTagID : hashTagsID) {
             List<Integer> curPostsID = getIDsByHashTag(hashTagID);
 
-            postsID.retainAll(curPostsID);
+            if (postsID.isEmpty()) {
+                postsID = curPostsID;
+            } else {
+                postsID.retainAll(curPostsID);
+            }
         }
 
         return postsID;
@@ -151,20 +169,18 @@ public class PostDAOImpl implements PostDAO {
 
     @Override
     public List<Post> getPage(FilterForm filterForm) {
-        List<Integer> usersID;
-
-        if (filterForm.getAuthor() != null) {
-            usersID = userDAO.getIDs(filterForm.getAuthor());
-        } else {
-            usersID = new ArrayList<>();
-        }
-
         List<Integer> postsIDByUsersDate;
 
-        if (usersID.isEmpty()) {
-            postsIDByUsersDate = getIDsByDate(filterForm.getFromDate(), filterForm.getToDate());
+        if (filterForm.getAuthor() != null) {
+            Optional<Integer> userID = userDAO.getID(filterForm.getAuthor());
+
+            if (userID.isEmpty()) {
+                return new ArrayList<>();
+            }
+
+            postsIDByUsersDate = getIDsByUserDate(userID.get(), filterForm.getFromDate(), filterForm.getToDate());
         } else {
-            postsIDByUsersDate = getIDsByUsersDate(usersID, filterForm.getFromDate(), filterForm.getToDate());
+            postsIDByUsersDate = getIDsByDate(filterForm.getFromDate(), filterForm.getToDate());
         }
 
         if (!filterForm.getDescriptionHashTags().isEmpty()) {

@@ -68,24 +68,22 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public List<Integer> getIDs(String name) {
+    public Optional<Integer> getID(String name) {
         try (Connection connection = ConnectionPool.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement("SELECT user_id FROM user WHERE name=?")) {
             statement.setString(1, name);
 
             ResultSet resultSet = statement.executeQuery();
 
-            List<Integer> ids = new ArrayList<>();
-
-            while (resultSet.next()) {
-                ids.add(resultSet.getInt(Constants.USER_ID));
+            if (resultSet.next()) {
+                return Optional.of(resultSet.getInt("user_id"));
             }
 
-            return ids;
+            return Optional.empty();
         } catch (SQLException | NamingException e) {
             logger.log(Level.SEVERE, e.getMessage());
 
-            return new ArrayList<>();
+            return Optional.empty();
         }
     }
 }

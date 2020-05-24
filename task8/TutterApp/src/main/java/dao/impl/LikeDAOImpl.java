@@ -43,7 +43,7 @@ public class LikeDAOImpl implements LikeDAO {
 
             List<User> likeUsers = new ArrayList<>();
 
-            if (resultSet.next()) {
+            while (resultSet.next()) {
                 userDAO.get(resultSet.getInt(Constants.USER_ID)).ifPresent(likeUsers::add);
             }
 

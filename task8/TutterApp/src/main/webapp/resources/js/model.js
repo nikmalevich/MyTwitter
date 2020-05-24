@@ -1,176 +1,75 @@
-startPosts = [
-    {
-        id: '1',
-        description: 'aaa',
-        createdAt: new Date('2020-03-17T23:00:00'),
-        author: 'Ivan',
-        hashTags: ['covid-19'],
-        likes: ['Ivan']
-    },
-    {
-        id: '2',
-        description: 'bbb',
-        createdAt: new Date('2020-03-21T12:58:00'),
-        author: 'anna',
-        photoLink: 'https://images.aif.ru/017/670/9a6e8711e058b9c97bcbe0ef1061c82c.jpg',
-        hashTags: ['burger'],
-        likes: []
-    }
-];
-
 class Model {
-    _posts;
-    _curNumFilterPosts;
-
-    static _postSchema = {
-        id: val => typeof val === 'string',
-        description: val => typeof val === 'string' && val.length < 200,
-        createdAt: val => Object.prototype.toString.call(val) === '[object Date]',
-        createdFromTo: val => (Array.isArray(val) || typeof val === 'undefined'),
-        author: val => typeof val === 'string' && val.length > 0,
-        photoLink: val => ((typeof val === 'string') || (typeof val === 'undefined')),
-        hashTags: val => Array.isArray(val),
-        likes: val => Array.isArray(val)
-    };
-
-    constructor() {
-        let keyPosts = Object.keys(localStorage);
-        this._posts = [];
-
-        if (keyPosts.length === 0) {
-            for (let post in startPosts) {
-                this.add(post);
+    async getPage(filterConfig = {}) {
+        let response = await fetch('/posts', {
+            method: 'POST',
+            body: JSON.stringify(filterConfig),
+            headers: {
+                'Content-Type': 'application/json',
             }
-        } else {
-            for (let i = 0; i < keyPosts.length; i++) {
-                try {
-                    let post = JSON.parse(localStorage.getItem(keyPosts[i]));
-
-                    post.createdAt = new Date(post.createdAt);
-
-                    this._posts.push(post);
-                } catch (e) {
-                    console.log('Parse JSON error');
-                }
-            }
-        }
-    }
-
-    static _validateSchema(validateOver = {}, post = {}) {
-        if ((Object.keys(post).length > Object.keys(validateOver).length) || (Object.keys(post).length < Object.keys(validateOver).length - 2)) {
-            console.log('Mismatching number of keys!');
-
-            return false;
-        }
-
-        let errors = Object.keys(validateOver)
-            .filter(key => !(Model._postSchema)[key]?.(post[key]))
-            .map(key => new Error(key + ' is invalid!'));
-
-        if (errors.length > 0) {
-            errors.forEach(error => console.log(error.message));
-
-            return false;
-        }
-
-        return true;
-    }
-
-    static validate(post = {}) {
-        return Model._validateSchema(Model._postSchema, post);
-    }
-
-    getPage(skip = 0, top = 10, filterConfig = {}) {
-        if (!Model._validateSchema(filterConfig, filterConfig)) {
-            console.log('Wrong filterConfig');
-
-            return [];
-        }
-
-        let filteredPosts = this._posts.filter(post => {
-            for (let key in filterConfig) {
-                if (key === 'createdFromTo') {
-                    return (post.createdAt >= filterConfig[key][0]) && (post.createdAt <= filterConfig[key][1]);
-                } else if (Array.isArray(filterConfig[key])) {
-                    for (let property in filterConfig[key]) {
-                        if (!post[key].find(elem => elem === filterConfig[key][property])) {
-                            return false;
-                        }
-                    }
-                } else {
-                    if (post[key] !== filterConfig[key]) {
-                        return false;
-                    }
-                }
-            }
-
-            return true;
         });
 
-        this._curNumFilterPosts = filteredPosts.length;
-
-        return filteredPosts.sort((a, b) => a.createdAt > b.createdAt ? 1 : -1).slice(skip, skip + top);
+        return response.json();
     }
 
-    get(id = '') {
-        return this._posts.find(post => post.id === id);
+    async countPosts() {
+        let response = await fetch('/posts');
+
+        return response.json();
     }
 
-    add(post = {}) {
-        console.log(post);
+    async get(id = 0) {
+        let response = await fetch(`/post?id=${id}`);
 
-        if (Model.validate(post)) {
-            this._posts.push(post);
-            localStorage.setItem(post.id, JSON.stringify(post));
-
-            return true;
-        }
-
-        return false;
+        return response.json();
     }
 
-    edit(id = '', post = {}) {
-        let oldPost = this.get(id);
+    async add(post = {}) {
+        let response = await fetch('/post', {
+            method: 'POST',
+            body: JSON.stringify(post),
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
 
-        if (oldPost && Model._validateSchema(post, post)) {
-            Object.keys(post).forEach(key => oldPost[key] = post[key]);
-            localStorage.removeItem(id);
-            localStorage.setItem(id, JSON.stringify(oldPost));
-
-            return true;
-        }
-
-        return false;
+        return response.json();
     }
 
-    remove(id = '') {
-        let length = this._posts.length;
-        this._posts = this._posts.filter(post => post.id !== id);
+    async edit(post = {}) {
+        let response = await fetch('/post', {
+            method: 'PUT',
+            body: JSON.stringify(post),
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
 
-        if (length !== this._posts.length) {
-            localStorage.removeItem(id);
-
-            return true;
-        }
-
-        return false;
+        return response.json();
     }
 
-    like(id = '', user = '') {
-        let post = this.get(id);
+    async remove(id = 0) {
+        let response = await fetch(`/post?id=${id}`, {
+            method: 'DELETE'
+        });
 
-        post.likes.push(user);
-
-        localStorage.removeItem(id);
-        localStorage.setItem(id, JSON.stringify(post));
+        return response.json();
     }
 
-    dislike(id = '', user = '') {
-        let post = this.get(id);
+    async like(postID = 0, userID = 0) {
+        let response = await fetch(`/like?postID=${postID}&userID=${userID}`);
 
-        post.likes = post.likes.filter(like => like !== user);
+        return response.json();
+    }
 
-        localStorage.removeItem(id);
-        localStorage.setItem(id, JSON.stringify(post));
+    async dislike(postID = 0, userID = 0) {
+        let response = await fetch(`/dislike?postID=${postID}&userID=${userID}`);
+
+        return response.json();
+    }
+
+    async getUserID(name = '') {
+        let response = await fetch(`/user?name=${name}`);
+
+        return response.json();
     }
 }
