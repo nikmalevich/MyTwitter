@@ -4,27 +4,25 @@ import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
-@WebFilter("/*")
+@WebFilter({"/post", "/like", "/dislike"})
 public class TimeFilter implements Filter {
     public void init(FilterConfig filterConfig) {
 
     }
 
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        long startTime = System.currentTimeMillis();
-        filterChain.doFilter(servletRequest, servletResponse);
-        long finishTime = System.currentTimeMillis();
-        long time = finishTime - startTime;
+        HttpServletRequest req = (HttpServletRequest) servletRequest;
+        HttpServletResponse resp = (HttpServletResponse) servletResponse;
+        HttpSession httpSession = req.getSession(false);
 
-        HttpServletRequest request = (HttpServletRequest) servletRequest;
-        HttpServletResponse response = (HttpServletResponse) servletResponse;
-
-        String url = String.valueOf(request.getRequestURL());
-        String method = request.getMethod();
-
-        System.out.println("Time: " + time + "ms; URL: " + url + "; Method: " + method);
+        if (httpSession == null || httpSession.getAttribute("userID") == null) {
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        } else {
+            filterChain.doFilter(servletRequest, servletResponse);
+        }
     }
 
     public void destroy() {

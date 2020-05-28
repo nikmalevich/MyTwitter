@@ -6,7 +6,6 @@ class Controller {
     static _curFilter;
     static _curPost;
     static _curPostID;
-    static _users;
 
     constructor() {
         Controller._model = new Model();
@@ -25,13 +24,10 @@ class Controller {
         Controller._curUser.id = 0;
         Controller._curFilter = {};
         Controller._curFilter.descriptionHashTags = [];
-        Controller._curFilter.fromDate = new Date('2000-09-08T00:00:00');
-        Controller._curFilter.toDate = new Date(new Date().getDate() + 1);
+        Controller._curFilter.fromDate = new Date('2019-01-01T00:00:00');
+        Controller._curFilter.toDate = new Date('2021-01-01T00:00:00');
         Controller._curFilter.quantity = 10;
         Controller._curPost = null;
-        Controller._users = new Map();
-        Controller._users.set('nikmalevich', '1111');
-        Controller._users.set('anna', '2222');
 
         Controller.getPage(Controller._curFilter);
     }
@@ -77,13 +73,14 @@ class Controller {
         Controller.getPage(Controller._curFilter);
     }
 
-    static logInOut() {
+    static async logInOut() {
         if (Controller._curUser.id === 0) {
             Controller._view._mainPage.setAttribute('style', 'display: none');
             Controller._view._postPage.setAttribute('style', 'display: none');
             Controller._view._errorPage.setAttribute('style', 'display: none');
             Controller._view._logInPage.setAttribute('style', 'display: block');
         } else {
+            await Controller._model.logout();
             Controller._curUser.id = 0;
             Controller._view._logInOutButton.textContent = 'Log in';
             Controller._view._currentUser.textContent = '';
@@ -237,29 +234,30 @@ class Controller {
     }
 
     static async logIn() {
-        let login = Controller._view._userLogin.value;
-        let password = Controller._view._userPassword.value;
+        let loginForm = {};
+        let username = Controller._view._userLogin.value;
+
+        loginForm.name = btoa(username);
+        loginForm.password = btoa(Controller._view._userPassword.value);
 
         Controller._view._userLogin.value = '';
         Controller._view._userPassword.value = '';
 
-        if (Controller._users.get(login) === password) {
-            Controller._curUser.name = login;
-            try {
-                Controller._curUser.id = await Controller._model.getUserID(login);
-                Controller._view._currentUser.textContent = login;
+        let userID = await Controller._model.login(loginForm);
 
-                Controller._view._incorrectLogInData.setAttribute('style', 'visibility: hidden');
-                Controller._view._logInPage.setAttribute('style', 'display: none');
-                Controller._view._mainPage.setAttribute('style', 'display: block');
-                Controller._view._logInOutButton.textContent = 'Log out';
-                Controller._view._addPostButton.setAttribute('style', 'display: block');
-                Controller._view._addPostButton.disabled = false;
+        if (userID != null) {
+            Controller._curUser.name = username;
+            Controller._curUser.id = userID;
+            Controller._view._currentUser.textContent = username;
 
-                Controller.getPage(Controller._curFilter);
-            } catch (e) {
-                Controller.errorPage();
-            }
+            Controller._view._incorrectLogInData.setAttribute('style', 'visibility: hidden');
+            Controller._view._logInPage.setAttribute('style', 'display: none');
+            Controller._view._mainPage.setAttribute('style', 'display: block');
+            Controller._view._logInOutButton.textContent = 'Log out';
+            Controller._view._addPostButton.setAttribute('style', 'display: block');
+            Controller._view._addPostButton.disabled = false;
+
+            Controller.getPage(Controller._curFilter);
         } else {
             Controller._view._incorrectLogInData.setAttribute('style', 'visibility: visible');
         }
