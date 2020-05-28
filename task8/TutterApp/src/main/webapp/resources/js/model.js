@@ -18,7 +18,7 @@ class Model {
     }
 
     async get(id = 0) {
-        let response = await fetch(`/post?id=${id}`);
+        let response = await fetch(`/getPost?id=${id}`);
 
         return response.json();
     }
@@ -67,9 +67,21 @@ class Model {
         return response.json();
     }
 
-    async getUserID(name = '') {
-        let response = await fetch(`/user?name=${name}`);
+    async login(loginForm = {}) {
+        let response = await fetch('/user', {
+            method: 'POST',
+            body: JSON.stringify(loginForm),
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
 
-        return response.json();
+        if (response.status !== 401) {
+            return response.json();
+        }
+    }
+
+    async logout() {
+        await fetch('/user');
     }
 }
