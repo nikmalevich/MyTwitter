@@ -64,24 +64,6 @@ public class PostDAOImpl implements PostDAO {
     }
 
     @Override
-    public Optional<Integer> getUserID(int id) {
-        try (Connection connection = ConnectionPool.getInstance().getConnection();
-            PreparedStatement statement = connection.prepareStatement("SELECT user_id FROM post WHERE post_id=?")) {
-            statement.setInt(1, id);
-
-            ResultSet resultSet = statement.executeQuery();
-
-            if (resultSet.next()) {
-                return Optional.of(resultSet.getInt("user_id"));
-            }
-        } catch (SQLException | NamingException e) {
-            logger.log(Level.SEVERE, e.getMessage());
-        }
-
-        return Optional.empty();
-    }
-
-    @Override
     public int countPosts() {
         try (Connection connection = ConnectionPool.getInstance().getConnection();
             PreparedStatement statement = connection.prepareStatement("SELECT count(*) FROM post")) {
