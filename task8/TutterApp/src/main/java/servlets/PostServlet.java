@@ -5,12 +5,12 @@ import dao.impl.PostDAOImpl;
 import forms.EditPostForm;
 import forms.NewPostForm;
 import models.Constants;
+import models.Post;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -32,9 +32,25 @@ public class PostServlet extends HttpServlet {
     }
 
     @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
+        int id = Integer.parseInt(req.getParameter("id"));
+
+        Optional<Post> post = postDAO.get(id);
+
+        if (post.isPresent()) {
+            try {
+                resp.getWriter().write(Constants.OBJECT_MAPPER.writeValueAsString(post.get()));
+            } catch (IOException e) {
+                logger.log(Level.SEVERE, e.getMessage());
+            }
+        }
+    }
+
+    @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
         try {
             String json = req.getReader().lines().reduce("", (accumulator, actual) -> accumulator + actual);
+
             NewPostForm form = Constants.OBJECT_MAPPER.readValue(json, NewPostForm.class);
 
             resp.getWriter().write(Boolean.toString(postDAO.add(form)));
@@ -45,23 +61,12 @@ public class PostServlet extends HttpServlet {
 
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) {
-        HttpSession httpSession = req.getSession(false);
-        int userID = (int) httpSession.getAttribute("userID");
-
         try {
             String json = req.getReader().lines().reduce("", (accumulator, actual) -> accumulator + actual);
+
             EditPostForm form = Constants.OBJECT_MAPPER.readValue(json, EditPostForm.class);
-            Optional<Integer> postUserID = postDAO.getUserID(form.getId());
 
-            if (postUserID.isPresent()) {
-                if (postUserID.get() == userID) {
-                    resp.getWriter().write(Boolean.toString(postDAO.edit(form)));
-
-                    return;
-                }
-            }
-
-            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            resp.getWriter().write(Boolean.toString(postDAO.edit(form)));
         } catch (IOException e) {
             logger.log(Level.SEVERE, e.getMessage());
         }
@@ -69,22 +74,10 @@ public class PostServlet extends HttpServlet {
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) {
-        HttpSession httpSession = req.getSession(false);
-        int userID = (int) httpSession.getAttribute("userID");
         int id = Integer.parseInt(req.getParameter("id"));
 
         try {
-            Optional<Integer> postUserID = postDAO.getUserID(id);
-
-            if (postUserID.isPresent()) {
-                if (postUserID.get() == userID) {
-                    resp.getWriter().write(Boolean.toString(postDAO.remove(id)));
-
-                    return;
-                }
-            }
-
-            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            resp.getWriter().write(Boolean.toString(postDAO.remove(id)));
         } catch (IOException e) {
             logger.log(Level.SEVERE, e.getMessage());
         }

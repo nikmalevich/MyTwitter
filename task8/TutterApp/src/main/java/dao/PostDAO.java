@@ -17,7 +17,6 @@ public interface PostDAO {
     List<Integer> getIDsByHashTag(Integer hashTagID);
     List<Integer> getIDsByHashTags(List<Integer> hashTagsID);
     List<Post> getPage(FilterForm filterForm);
-    Optional<Integer> getUserID(int id);
     boolean add(NewPostForm form);
     boolean edit(EditPostForm post);
     boolean remove(int id);

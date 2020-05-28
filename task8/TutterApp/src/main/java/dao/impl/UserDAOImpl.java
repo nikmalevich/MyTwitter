@@ -52,6 +52,22 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
+    public boolean add(String name) {
+        try (Connection connection = ConnectionPool.getInstance().getConnection();
+             PreparedStatement statement = connection.prepareStatement("INSERT INTO user(name) VALUE (?)")) {
+            statement.setString(1, name);
+
+            statement.execute();
+        } catch (SQLException | NamingException e) {
+            logger.log(Level.SEVERE, e.getMessage());
+
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
     public Optional<Integer> getID(String name) {
         try (Connection connection = ConnectionPool.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement("SELECT user_id FROM user WHERE name=?")) {
@@ -69,24 +85,5 @@ public class UserDAOImpl implements UserDAO {
 
             return Optional.empty();
         }
-    }
-
-    @Override
-    public Optional<Integer> login(String name, String password) {
-        try (Connection connection = ConnectionPool.getInstance().getConnection();
-            PreparedStatement statement = connection.prepareStatement("SELECT user_id FROM user WHERE name=? AND password=?")) {
-            statement.setString(1, name);
-            statement.setString(2, password);
-
-            ResultSet resultSet = statement.executeQuery();
-
-            if (resultSet.next()) {
-                return Optional.of(resultSet.getInt("user_id"));
-            }
-        } catch (SQLException | NamingException e) {
-            logger.log(Level.SEVERE, e.getMessage());
-        }
-
-        return Optional.empty();
     }
 }
